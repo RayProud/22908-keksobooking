@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Роман Прудников](https://up.htmlacademy.ru/nodejs/2/user/22908).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Бренчев](https://htmlacademy.ru/profile/id59895) 
 
 ---
 
