@@ -3,31 +3,42 @@ const PROJECT_NAME = 'Кексобукинг';
 
 const cmd = process.argv[2];
 
-const helpMsg = `Доступные команды:
---help    — печатает этот текст;
---version — печатает версию приложения;`
-
-const errorMsg = `Неизвестная команда ${cmd}.
-Чтобы прочитать правила использования приложения, наберите "--help"`;
-
-const noCmdMsg = `Привет пользователь!
-Эта программа будет запускать сервер «${PROJECT_NAME}».
-Автор: Кекс.`;
-
-if (!cmd) {
-  console.log(noCmdMsg);
-  process.exit(0);
-}
+const commands = {
+  '--help': {
+    info: 'Доступные команды:\n--help    — печатает этот текст;\n--version — печатает версию приложения;',
+    action: function() {
+      console.log(this.info);
+    }
+  },
+  '--version': {
+    info: VERSION,
+    action: function() {
+      console.log(this.info);
+    }
+  },
+  default: {
+    info: `Привет пользователь!\nЭта программа будет запускать сервер «${PROJECT_NAME}».\nАвтор: Кекс.`,
+    action: function() {
+      console.log(this.info);
+    }
+  },
+  error: {
+    info: `Неизвестная команда ${cmd}.\nЧтобы прочитать правила использования приложения, наберите "--help"`,
+    action: function() {
+      console.log(this.info);
+    }
+  },
+};
 
 switch (cmd) {
+  case undefined:
+    commands.default.action();
+    break;
   case '--help':
-    console.log(helpMsg);
-    process.exit(0);
   case '--version':
-    console.log(VERSION);
-    process.exit(0);
+    commands[cmd].action();
+    break;
   default:
-    console.error(errorMsg);
+    commands.error.action();
     process.exit(1);
 }
-
