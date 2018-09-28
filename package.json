@@ -1,0 +1,24 @@
+{
+  "name": "keksobooking",
+  "version": "1.0.0",
+  "description": "* Студент: [Роман Прудников](https://up.htmlacademy.ru/nodejs/2/user/22908). * Наставник: [Александр Бренчев](https://htmlacademy.ru/profile/id59895)",
+  "main": "index.js",
+  "scripts": {
+    "test:lint": "eslint .",
+    "test": "npm run test:lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RayProud/22908-keksobooking.git"
+  },
+  "author": "Roman Prudnikov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RayProud/22908-keksobooking/issues"
+  },
+  "homepage": "https://github.com/RayProud/22908-keksobooking#readme",
+  "devDependencies": {
+    "eslint": "5.6.0",
+    "eslint-config-htmlacademy": "0.5.2"
+  }
+}
