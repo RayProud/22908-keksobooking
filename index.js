@@ -6,25 +6,25 @@ const cmd = process.argv[2];
 const commands = {
   '--help': {
     info: 'Доступные команды:\n--help    — печатает этот текст;\n--version — печатает версию приложения;',
-    getInfo: function() {
+    execute: function() {
       console.log(this.info);
     }
   },
   '--version': {
     info: VERSION,
-    getInfo: function() {
+    execute: function() {
       console.log(this.info);
     }
   },
   default: {
     info: `Привет пользователь!\nЭта программа будет запускать сервер «${PROJECT_NAME}».\nАвтор: Кекс.`,
-    getInfo: function() {
+    execute: function() {
       console.log(this.info);
     }
   },
   error: {
     info: `Неизвестная команда ${cmd}.\nЧтобы прочитать правила использования приложения, наберите "--help"`,
-    getInfo: function() {
+    execute: function() {
       console.log(this.info);
     }
   },
@@ -32,13 +32,13 @@ const commands = {
 
 switch (cmd) {
   case undefined:
-    commands.default.getInfo();
+    commands.default.execute();
     break;
   case '--help':
   case '--version':
-    commands[cmd].getInfo();
+    commands[cmd].execute();
     break;
   default:
-    commands.error.getInfo();
+    commands.error.execute();
     process.exit(1);
 }
