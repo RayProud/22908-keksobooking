@@ -3,14 +3,19 @@ const PROJECT_NAME = 'Кексобукинг';
 
 const cmd = process.argv[2];
 
+const CommandsNames = {
+  'help': '--help',
+  'version': '--version',
+};
+
 const commands = {
-  '--help': {
+  [CommandsNames.help]: {
     info: 'Доступные команды:\n--help    — печатает этот текст;\n--version — печатает версию приложения;',
     execute: function() {
       console.log(this.info);
     }
   },
-  '--version': {
+  [CommandsNames.version]: {
     info: VERSION,
     execute: function() {
       console.log(this.info);
@@ -34,8 +39,8 @@ switch (cmd) {
   case undefined:
     commands.default.execute();
     break;
-  case '--help':
-  case '--version':
+  case CommandsNames.help:
+  case CommandsNames.version:
     commands[cmd].execute();
     break;
   default:
