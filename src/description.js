@@ -1,9 +1,9 @@
-const packageInfo = require(`../package.json`);
+const {description} = require(`../package.json`);
 
 module.exports = {
   name: `description`,
   description: `Показывает описание программы`,
   execute() {
-    console.log(packageInfo.description);
+    console.log(description);
   }
 };
