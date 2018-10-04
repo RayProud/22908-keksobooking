@@ -1,4 +1,4 @@
-const colors = require(`colors`);
+const colors = require(`colors/safe`);
 const {version} = require(`../package.json`);
 const [major, minor, patch] = version.split(`.`);
 

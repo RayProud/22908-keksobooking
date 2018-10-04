@@ -1,4 +1,4 @@
-const colors = require(`colors`);
+const colors = require(`colors/safe`);
 const commands = require(`./command-loader`);
 
 const description = Object.values(commands).reduce((prev, cur) => {
