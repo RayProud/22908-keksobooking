@@ -1,87 +1,91 @@
 const shuffle = require(`lodash/shuffle`);
+const {entity} = require(`./config`);
+
+const SECS_IN_A_MINUTE = 60;
+const MINS_IN_AN_HOUR = 60;
+const HRS_IN_A_DAY = 60;
+
+function getRandomNumberInRange(min, max, isInclusiveMax) {
+  const maxValue = isInclusiveMax ? (max - min + 1) : (max - min);
+
+  return Math.floor(Math.random() * maxValue) + min;
+}
 
 function generateAvatar() {
   return `https://robohash.org/${Math.random().toString(36).slice(2)}`;
 }
 
 function generateTitle() {
-  const flatTitles = [`Большая уютная квартира`, `Маленькая неуютная квартира`, `Огромный прекрасный дворец`, `Маленький ужасный дворец`, `Красивый гостевой домик`, `Некрасивый негостеприимный домик`, `Уютное бунгало далеко от моря`, `Неуютное бунгало по колено в воде`];
-  const flatTitlesLength = flatTitles.length;
+  const flatTitlesLength = entity.offer.flatTitles.length;
 
-  return flatTitles[Math.floor(Math.random() * flatTitlesLength)];
+  return entity.offer.flatTitles[getRandomNumberInRange(0, flatTitlesLength)];
 }
 
 function generateLocation() {
-  const xMin = 300;
-  const xMax = 900;
-  const yMin = 150;
-  const yMax = 500;
+  const {x, y} = entity.locationRange;
 
   return {
-    x: Math.floor(Math.random() * (xMax - xMin + 1)) + xMin,
-    y: Math.floor(Math.random() * (yMax - yMin + 1)) + yMin,
+    x: getRandomNumberInRange(x.min, x.max, true),
+    y: getRandomNumberInRange(y.min, y.max, true),
   };
 }
 
 function generateDate() {
   const todayInUnix = Math.floor(+new Date() / 1000);
-  const secondsInAMinute = 60;
-  const minutesInAnHour = 60;
-  const hoursInADay = 60;
-  const daysSinceNow = 7;
-  const dateSinceInUnix = todayInUnix - (secondsInAMinute * minutesInAnHour * hoursInADay * daysSinceNow);
+  const {daysTillNow} = entity.date;
+  const dateSinceInUnix = todayInUnix - (SECS_IN_A_MINUTE * MINS_IN_AN_HOUR * HRS_IN_A_DAY * daysTillNow);
 
-  return Math.floor(Math.random() * (todayInUnix - dateSinceInUnix + 1)) + dateSinceInUnix;
+  return getRandomNumberInRange(dateSinceInUnix, todayInUnix, true);
 }
 
 function generatePrice() {
-  const min = 1000;
-  const max = 1000000;
+  const {max, min} = entity.offer.price;
 
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return getRandomNumberInRange(max, min, true);
 }
 
 function generateType() {
-  const types = [`flat`, `palace`, `house`, `bungalo`];
-  const typesLength = types.length;
+  const {types} = entity.offer;
+  const typesLength = entity.offer.types.length;
 
-  return types[Math.floor(Math.random() * typesLength)];
+  return types[getRandomNumberInRange(0, typesLength)];
 }
 
 function generateRooms() {
-  const min = 1;
-  const max = 5;
+  const {min, max} = entity.offer.rooms;
 
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return getRandomNumberInRange(min, max, true);
 }
 
 function generateGuests() {
-  return Math.floor(Math.random() * 10);
+  const {min, max} = entity.offer.guests;
+
+  return getRandomNumberInRange(min, max, true);
 }
 
 function generateCheckin() {
-  const checkinTimes = [`12:00`, `13:00`, `14:00`];
+  const {checkinTimes} = entity.offer;
   const checkinTimesLength = checkinTimes.length;
 
-  return checkinTimes[Math.floor(Math.random() * checkinTimesLength)];
+  return checkinTimes[getRandomNumberInRange(0, checkinTimesLength)];
 }
 
 function generateCheckout() {
-  const checkoutTimes = [`12:00`, `13:00`, `14:00`];
+  const {checkoutTimes} = entity.offer;
   const checkoutTimesLength = checkoutTimes.length;
 
-  return checkoutTimes[Math.floor(Math.random() * checkoutTimesLength)];
+  return checkoutTimes[getRandomNumberInRange(0, checkoutTimesLength)];
 }
 
 function generateFeatures() {
-  const features = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
+  const {features} = entity.offer;
   const featuresLength = features.length;
 
-  return shuffle(features).slice(0, Math.floor(Math.random() * featuresLength));
+  return shuffle(features).slice(0, getRandomNumberInRange(0, featuresLength));
 }
 
 function generatePhotos() {
-  const photos = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
+  const {photos} = entity.offer;
 
   return shuffle(photos);
 }
