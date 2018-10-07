@@ -1,6 +1,7 @@
 const generateEntity = require(`../src/generateEntity`);
 const entityConfig = require(`../src/config`).entity;
 const assert = require(`assert`);
+const url = require(`url`);
 
 const SECS_IN_A_DAY = 216000;
 // entityInstance создаётся раньше этого теста, поэтому нужно учесть этот лаг
@@ -28,8 +29,14 @@ describe(`generateEntity`, () => {
         assert.equal(typeof avatar, `string`);
       });
 
-      it(`should start with http`, () => {
-        assert.ok(avatar.startsWith(`http`));
+      const parsedAvatarUrl = url.parse(avatar);
+
+      it(`protocol should start with http`, () => {
+        assert.ok(parsedAvatarUrl.protocol.startsWith(`http`));
+      });
+
+      it(`host should be`, () => {
+        assert.ok(parsedAvatarUrl.host);
       });
     });
   });
@@ -69,8 +76,11 @@ describe(`generateEntity`, () => {
     describe(`price`, () => {
       const {min, max} = entityConfig.offer.price;
 
-      it(`should be between ${min} and ${max}`, () => {
+      it(`should be number`, () => {
         assert.equal(typeof price, `number`);
+      });
+
+      it(`should be between ${min} and ${max}`, () => {
         assert.ok(price >= min);
         assert.ok(price <= max);
       });
@@ -120,21 +130,16 @@ describe(`generateEntity`, () => {
       const featuresList = entityConfig.offer.features;
 
       it(`should be an array`, () => {
-        assert.equal(({}).toString.call(features), `[object Array]`, `it's not an array`);
+        assert.ok(Array.isArray(features), `it's not an array`);
       });
 
       it(`should be an array of unique values`, () => {
-        const map = features.reduce((prev, cur) => {
-          if (prev[cur]) {
-            prev[cur] = prev[cur] + 1;
-          } else {
-            prev[cur] = 1;
-          }
+        const featuresSet = new Set();
+        features.forEach((i) => {
+          featuresSet.add(i);
+        });
 
-          return prev;
-        }, {});
-
-        assert.ok(Object.values(map).every((i) => i === 1));
+        assert.equal(features.length, featuresSet.size);
       });
 
       it(`elements should be items of features list`, () => {
@@ -179,16 +184,22 @@ describe(`generateEntity`, () => {
     });
 
     describe(`x`, () => {
-      it(`should be number between ${locationRange.x.min} and ${locationRange.x.max}`, () => {
+      it(`should be number`, () => {
         assert.equal(typeof location.x, `number`);
+      });
+
+      it(`should be number between ${locationRange.x.min} and ${locationRange.x.max}`, () => {
         assert.ok(location.x >= locationRange.x.min, location.x);
         assert.ok(location.x <= locationRange.x.max, location.x);
       });
     });
 
     describe(`y`, () => {
+      it(`should be number`, () => {
+        assert.equal(typeof location.y, `number`);
+      });
+
       it(`should be number between ${locationRange.y.min} and ${locationRange.y.max}`, () => {
-        assert.equal(typeof location.x, `number`);
         assert.ok(location.y >= locationRange.y.min, location.y);
         assert.ok(location.y <= locationRange.y.max, location.y);
       });
