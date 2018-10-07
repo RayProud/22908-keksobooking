@@ -2,9 +2,7 @@ const generateEntity = require(`../src/generateEntity`);
 const entityConfig = require(`../src/config`).entity;
 const assert = require(`assert`);
 
-const SECS_IN_A_MINUTE = 60;
-const MINS_IN_AN_HOUR = 60;
-const HRS_IN_A_DAY = 60;
+const SECS_IN_A_DAY = 216000;
 // entityInstance создаётся раньше этого теста, поэтому нужно учесть этот лаг
 const POTENTIAL_LAG_IN_SECS = 10;
 
@@ -198,7 +196,7 @@ describe(`generateEntity`, () => {
   });
 
   describe(`date`, () => {
-    const nowInUnix = Math.floor(+new Date() / 1000);
+    const nowInUnix = Math.floor(Date.now() / 1000);
     const {date: {daysTillNow}} = entityConfig;
 
     it(`should be number`, () => {
@@ -210,7 +208,7 @@ describe(`generateEntity`, () => {
     });
 
     it(`should be later than ${daysTillNow} days ago`, () => {
-      const dateSinceInUnix = nowInUnix - (SECS_IN_A_MINUTE * MINS_IN_AN_HOUR * HRS_IN_A_DAY * daysTillNow) - POTENTIAL_LAG_IN_SECS;
+      const dateSinceInUnix = nowInUnix - (SECS_IN_A_DAY * daysTillNow) - POTENTIAL_LAG_IN_SECS;
 
       assert.ok(entityInstance.date > dateSinceInUnix, `date is ${entityInstance.date} which is earlier than ${daysTillNow} days ago — ${dateSinceInUnix}`);
     });

@@ -1,4 +1,4 @@
-const {name} = require(`../package.json`);
+const {name} = require(`../../package.json`);
 const greeting = `Привет пользователь!\nЭта программа будет запускать сервер «${name}».\nАвтор: Кекс.`;
 
 module.exports = {

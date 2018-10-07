@@ -1,10 +1,10 @@
 // будем считать, что эти команды — расширяемый функционал
-const commands = require(`./command-loader`);
+const commands = require(`./commands/command-loader`);
 
 // а эти три команды — стандартный набор и вообще исключительные случаи
-const error = require(`./error`);
-const greet = require(`./greet`);
-const help = require(`./help`);
+const error = require(`./commands/error`);
+const greet = require(`./commands/greet`);
+const help = require(`./commands/help`);
 
 function execute(cmd) {
   if (!cmd) {

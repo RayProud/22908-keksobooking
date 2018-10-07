@@ -1,5 +1,5 @@
 const colors = require(`colors/safe`);
-const {version} = require(`../package.json`);
+const {version} = require(`../../package.json`);
 const [major, minor, patch] = version.split(`.`);
 
 module.exports = {

@@ -21,7 +21,6 @@
   "devDependencies": {
     "eslint": "5.6.0",
     "eslint-config-htmlacademy": "0.5.2",
-    "lodash": "4.17.11",
     "mocha": "5.2.0"
   },
   "dependencies": {
