@@ -11,13 +11,13 @@ function generateAvatar() {
 }
 
 function generateTitle() {
-  const {flatTitles} = entity.offer;
+  const {values} = entity.offer.title;
 
-  return getRandomItemFromArray(flatTitles);
+  return getRandomItemFromArray(values);
 }
 
 function generateLocation() {
-  const {x, y} = entity.locationRange;
+  const {x, y} = entity.location;
 
   return {
     x: getRandomNumberInRange(x.min, x.max, true),
@@ -42,9 +42,9 @@ function generatePrice() {
 }
 
 function generateType() {
-  const {types} = entity.offer;
+  const {values} = entity.offer.type;
 
-  return getRandomItemFromArray(types);
+  return getRandomItemFromArray(values);
 }
 
 function generateRooms() {

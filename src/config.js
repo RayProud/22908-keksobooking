@@ -2,12 +2,16 @@
 module.exports = {
   entity: {
     offer: {
-      flatTitles: [`Большая уютная квартира`, `Маленькая неуютная квартира`, `Огромный прекрасный дворец`, `Маленький ужасный дворец`, `Красивый гостевой домик`, `Некрасивый негостеприимный домик`, `Уютное бунгало далеко от моря`, `Неуютное бунгало по колено в воде`],
+      title: {
+        values: [`Большая уютная квартира`, `Маленькая неуютная квартира`, `Огромный прекрасный дворец`, `Маленький ужасный дворец`, `Красивый гостевой домик`, `Некрасивый негостеприимный домик`, `Уютное бунгало далеко от моря`, `Неуютное бунгало по колено в воде`],
+      },
       price: {
         min: 1000,
         max: 1000000,
       },
-      types: [`flat`, `palace`, `house`, `bungalo`],
+      type: {
+        values: [`flat`, `palace`, `house`, `bungalo`],
+      },
       guests: {
         min: 0,
         max: 10,
@@ -21,7 +25,7 @@ module.exports = {
       features: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
       photos: [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`],
     },
-    locationRange: {
+    location: {
       x: {
         min: 300,
         max: 900,

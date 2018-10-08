@@ -9,7 +9,11 @@ const POTENTIAL_LAG_IN_SECS = 10;
 
 /* eslint-disable max-nested-callbacks */
 describe(`generateEntity`, () => {
-  const entityInstance = generateEntity();
+  let entityInstance = generateEntity();
+
+  beforeEach(() => {
+    entityInstance = generateEntity();
+  });
 
   it(`should generate an object`, () => {
     assert.equal(typeof entityInstance, `object`);
@@ -60,10 +64,10 @@ describe(`generateEntity`, () => {
     } = entityInstance;
 
     describe(`title`, () => {
-      const {flatTitles} = entityConfig.offer;
+      const {values} = entityConfig.offer.title;
 
-      it(`should be string one of flatTitles list`, () => {
-        assert.ok(flatTitles.includes(title), `${title} not in ${flatTitles} list`);
+      it(`should be string one of title values list`, () => {
+        assert.ok(values.includes(title), `${title} not in ${values} list`);
       });
     });
 
@@ -87,10 +91,10 @@ describe(`generateEntity`, () => {
     });
 
     describe(`type`, () => {
-      const {types} = entityConfig.offer;
+      const {values} = entityConfig.offer.type;
 
-      it(`should be string one of types list`, () => {
-        assert.ok(types.includes(type), `${type} not in ${types} list`);
+      it(`should be string one of type values list`, () => {
+        assert.ok(values.includes(type), `${type} not in ${values} list`);
       });
     });
 
@@ -134,10 +138,7 @@ describe(`generateEntity`, () => {
       });
 
       it(`should be an array of unique values`, () => {
-        const featuresSet = new Set();
-        features.forEach((i) => {
-          featuresSet.add(i);
-        });
+        const featuresSet = new Set(features);
 
         assert.equal(features.length, featuresSet.size);
       });
@@ -161,7 +162,7 @@ describe(`generateEntity`, () => {
       const photosList = entityConfig.offer.photos;
 
       it(`should be an array`, () => {
-        assert.equal(({}).toString.call(photos), `[object Array]`, `it's not an array`);
+        assert.ok(Array.isArray(photos), `it's not an array`);
       });
 
       it(`elements should be items of photos list`, () => {
@@ -177,7 +178,6 @@ describe(`generateEntity`, () => {
 
   describe(`location`, () => {
     const {location} = entityInstance;
-    const {locationRange} = entityConfig;
 
     it(`should have x and y properties`, () => {
       assert.equal(typeof location, `object`);
@@ -188,9 +188,9 @@ describe(`generateEntity`, () => {
         assert.equal(typeof location.x, `number`);
       });
 
-      it(`should be number between ${locationRange.x.min} and ${locationRange.x.max}`, () => {
-        assert.ok(location.x >= locationRange.x.min, location.x);
-        assert.ok(location.x <= locationRange.x.max, location.x);
+      it(`should be number between ${entityConfig.location.x.min} and ${entityConfig.location.x.max}`, () => {
+        assert.ok(location.x >= entityConfig.location.x.min, location.x);
+        assert.ok(location.x <= entityConfig.location.x.max, location.x);
       });
     });
 
@@ -199,9 +199,9 @@ describe(`generateEntity`, () => {
         assert.equal(typeof location.y, `number`);
       });
 
-      it(`should be number between ${locationRange.y.min} and ${locationRange.y.max}`, () => {
-        assert.ok(location.y >= locationRange.y.min, location.y);
-        assert.ok(location.y <= locationRange.y.max, location.y);
+      it(`should be number between ${entityConfig.location.y.min} and ${entityConfig.location.y.max}`, () => {
+        assert.ok(location.y >= entityConfig.location.y.min, location.y);
+        assert.ok(location.y <= entityConfig.location.y.max, location.y);
       });
     });
   });
