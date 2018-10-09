@@ -12,7 +12,7 @@ describe(`generateEntity`, () => {
   let entityInstance;
 
   beforeEach(() => {
-    entityInstance = generateEntity();
+    entityInstance = generateEntity(entityConfig);
   });
 
   it(`should generate an object`, () => {
@@ -98,18 +98,18 @@ describe(`generateEntity`, () => {
     });
 
     describe(`checkin`, () => {
-      const {checkinTimes} = entityConfig.offer;
+      const {values} = entityConfig.offer.checkin;
 
-      it(`should be string one of checkinTimes list`, () => {
-        assert.ok(checkinTimes.includes(entityInstance.offer.checkin), `${entityInstance.offer.checkin} not in ${checkinTimes} list`);
+      it(`should be string one of checkin list`, () => {
+        assert.ok(values.includes(entityInstance.offer.checkin), `${entityInstance.offer.checkin} not in ${values} list`);
       });
     });
 
     describe(`checkout`, () => {
-      const {checkoutTimes} = entityConfig.offer;
+      const {values} = entityConfig.offer.checkout;
 
-      it(`should be string one of checkoutTimes list`, () => {
-        assert.ok(checkoutTimes.includes(entityInstance.offer.checkout), `${entityInstance.offer.checkout} not in ${checkoutTimes} list`);
+      it(`should be string one of checkout list`, () => {
+        assert.ok(values.includes(entityInstance.offer.checkout), `${entityInstance.offer.checkout} not in ${values} list`);
       });
     });
 

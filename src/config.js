@@ -20,8 +20,12 @@ module.exports = {
         min: 1,
         max: 5,
       },
-      checkinTimes: [`12:00`, `13:00`, `14:00`],
-      checkoutTimes: [`12:00`, `13:00`, `14:00`],
+      checkin: {
+        values: [`12:00`, `13:00`, `14:00`],
+      },
+      checkout: {
+        values: [`12:00`, `13:00`, `14:00`],
+      },
       features: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
       photos: [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`],
     },

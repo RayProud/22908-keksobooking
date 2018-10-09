@@ -13,8 +13,9 @@ const {
   generatePhotos,
 } = require(`./helpers/entity`);
 
-function generateEntity() {
-  const location = generateLocation();
+function generateEntity(entityConfig) {
+  const {offer: {title, price, type, rooms, guests, checkin, checkout, features, photos}, date} = entityConfig;
+  const location = generateLocation(entityConfig.location);
 
   return {
     author: {
@@ -22,22 +23,22 @@ function generateEntity() {
     },
 
     offer: {
-      title: generateTitle(),
+      title: generateTitle(title),
       address: `${location.x}, ${location.y}`,
-      price: generatePrice(),
-      type: generateType(),
-      rooms: generateRooms(),
-      guests: generateGuests(),
-      checkin: generateCheckin(),
-      checkout: generateCheckout(),
-      features: generateFeatures(),
+      price: generatePrice(price),
+      type: generateType(type),
+      rooms: generateRooms(rooms),
+      guests: generateGuests(guests),
+      checkin: generateCheckin(checkin),
+      checkout: generateCheckout(checkout),
+      features: generateFeatures(features),
       description: ``,
-      photos: generatePhotos(),
+      photos: generatePhotos(photos),
     },
 
     location,
 
-    date: generateDate()
+    date: generateDate(date)
   };
 }
 

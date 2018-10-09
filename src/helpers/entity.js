@@ -1,4 +1,3 @@
-const {entity} = require(`../config`);
 const {
   shuffle,
   getRandomNumberInRange,
@@ -10,14 +9,14 @@ function generateAvatar() {
   return `https://robohash.org/${generateRandomString()}`;
 }
 
-function generateTitle() {
-  const {values} = entity.offer.title;
+function generateTitle(title) {
+  const {values} = title;
 
   return getRandomItemFromArray(values);
 }
 
-function generateLocation() {
-  const {x, y} = entity.location;
+function generateLocation(location) {
+  const {x, y} = location;
 
   return {
     x: getRandomNumberInRange(x.min, x.max, true),
@@ -25,62 +24,59 @@ function generateLocation() {
   };
 }
 
-function generateDate() {
+function generateDate(date) {
   // нужна только здесь, поэтому объявляю внутри функции
   const SECS_IN_A_DAY = 216000;
   const todayInUnix = Math.floor(Date.now() / 1000);
-  const {daysTillNow} = entity.date;
+  const {daysTillNow} = date;
   const dateSinceInUnix = todayInUnix - (SECS_IN_A_DAY * daysTillNow);
 
   return getRandomNumberInRange(dateSinceInUnix, todayInUnix, true);
 }
 
-function generatePrice() {
-  const {max, min} = entity.offer.price;
+function generatePrice(price) {
+  const {max, min} = price;
 
   return getRandomNumberInRange(max, min, true);
 }
 
-function generateType() {
-  const {values} = entity.offer.type;
+function generateType(type) {
+  const {values} = type;
 
   return getRandomItemFromArray(values);
 }
 
-function generateRooms() {
-  const {min, max} = entity.offer.rooms;
+function generateRooms(rooms) {
+  const {min, max} = rooms;
 
   return getRandomNumberInRange(min, max, true);
 }
 
-function generateGuests() {
-  const {min, max} = entity.offer.guests;
+function generateGuests(guests) {
+  const {min, max} = guests;
 
   return getRandomNumberInRange(min, max, true);
 }
 
-function generateCheckin() {
-  const {checkinTimes} = entity.offer;
+function generateCheckin(checkin) {
+  const {values} = checkin;
 
-  return getRandomItemFromArray(checkinTimes);
+  return getRandomItemFromArray(values);
 }
 
-function generateCheckout() {
-  const {checkoutTimes} = entity.offer;
+function generateCheckout(checkout) {
+  const {values} = checkout;
 
-  return getRandomItemFromArray(checkoutTimes);
+  return getRandomItemFromArray(values);
 }
 
-function generateFeatures() {
-  const {features} = entity.offer;
+function generateFeatures(features) {
   const featuresLength = features.length;
 
   return shuffle(features).slice(0, getRandomNumberInRange(0, featuresLength));
 }
 
-function generatePhotos() {
-  const {photos} = entity.offer;
-
+function generatePhotos(photos) {
   return shuffle(photos);
 }
 
