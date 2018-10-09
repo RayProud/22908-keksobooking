@@ -9,7 +9,7 @@ const POTENTIAL_LAG_IN_SECS = 10;
 
 /* eslint-disable max-nested-callbacks */
 describe(`generateEntity`, () => {
-  let entityInstance = generateEntity();
+  let entityInstance;
 
   beforeEach(() => {
     entityInstance = generateEntity();
@@ -20,60 +20,43 @@ describe(`generateEntity`, () => {
   });
 
   describe(`author`, () => {
-    const {author} = entityInstance;
-
     it(`should have an avatar property`, () => {
-      assert.equal(typeof author, `object`);
+      assert.equal(typeof entityInstance.author, `object`);
     });
 
     describe(`avatar`, () => {
-      const {avatar} = author;
-
       it(`should be a string`, () => {
-        assert.equal(typeof avatar, `string`);
+        assert.equal(typeof entityInstance.author.avatar, `string`);
       });
 
-      const parsedAvatarUrl = url.parse(avatar);
-
       it(`protocol should start with http`, () => {
+        const parsedAvatarUrl = url.parse(entityInstance.author.avatar);
+
         assert.ok(parsedAvatarUrl.protocol.startsWith(`http`));
       });
 
       it(`host should be`, () => {
+        const parsedAvatarUrl = url.parse(entityInstance.author.avatar);
+
         assert.ok(parsedAvatarUrl.host);
       });
     });
   });
 
   describe(`offer`, () => {
-    const {
-      offer: {
-        title,
-        address,
-        price,
-        features,
-        photos,
-        type,
-        rooms,
-        guests,
-        checkin,
-        checkout,
-        description
-      },
-      location
-    } = entityInstance;
-
     describe(`title`, () => {
       const {values} = entityConfig.offer.title;
 
       it(`should be string one of title values list`, () => {
+        const {title} = entityInstance.offer;
+
         assert.ok(values.includes(title), `${title} not in ${values} list`);
       });
     });
 
     describe(`address`, () => {
       it(`should consist of location.x and location.y`, () => {
-        assert.equal(address, `${location.x}, ${location.y}`);
+        assert.equal(entityInstance.offer.address, `${entityInstance.location.x}, ${entityInstance.location.y}`);
       });
     });
 
@@ -81,12 +64,12 @@ describe(`generateEntity`, () => {
       const {min, max} = entityConfig.offer.price;
 
       it(`should be number`, () => {
-        assert.equal(typeof price, `number`);
+        assert.equal(typeof entityInstance.offer.price, `number`);
       });
 
       it(`should be between ${min} and ${max}`, () => {
-        assert.ok(price >= min);
-        assert.ok(price <= max);
+        assert.ok(entityInstance.offer.price >= min);
+        assert.ok(entityInstance.offer.price <= max);
       });
     });
 
@@ -94,7 +77,7 @@ describe(`generateEntity`, () => {
       const {values} = entityConfig.offer.type;
 
       it(`should be string one of type values list`, () => {
-        assert.ok(values.includes(type), `${type} not in ${values} list`);
+        assert.ok(values.includes(entityInstance.offer.type), `${entityInstance.offer.type} not in ${values} list`);
       });
     });
 
@@ -102,15 +85,15 @@ describe(`generateEntity`, () => {
       const {min, max} = entityConfig.offer.rooms;
 
       it(`should be between ${min} and ${max}`, () => {
-        assert.equal(typeof rooms, `number`);
-        assert.ok(rooms >= min, rooms);
-        assert.ok(rooms <= max, rooms);
+        assert.equal(typeof entityInstance.offer.rooms, `number`);
+        assert.ok(entityInstance.offer.rooms >= min, entityInstance.offer.rooms);
+        assert.ok(entityInstance.offer.rooms <= max, entityInstance.offer.rooms);
       });
     });
 
     describe(`guests`, () => {
       it(`should be number`, () => {
-        assert.equal(typeof guests, `number`);
+        assert.equal(typeof entityInstance.offer.guests, `number`);
       });
     });
 
@@ -118,7 +101,7 @@ describe(`generateEntity`, () => {
       const {checkinTimes} = entityConfig.offer;
 
       it(`should be string one of checkinTimes list`, () => {
-        assert.ok(checkinTimes.includes(checkin), `${checkin} not in ${checkinTimes} list`);
+        assert.ok(checkinTimes.includes(entityInstance.offer.checkin), `${entityInstance.offer.checkin} not in ${checkinTimes} list`);
       });
     });
 
@@ -126,7 +109,7 @@ describe(`generateEntity`, () => {
       const {checkoutTimes} = entityConfig.offer;
 
       it(`should be string one of checkoutTimes list`, () => {
-        assert.ok(checkoutTimes.includes(checkout), `${checkout} not in ${checkoutTimes} list`);
+        assert.ok(checkoutTimes.includes(entityInstance.offer.checkout), `${entityInstance.offer.checkout} not in ${checkoutTimes} list`);
       });
     });
 
@@ -134,27 +117,27 @@ describe(`generateEntity`, () => {
       const featuresList = entityConfig.offer.features;
 
       it(`should be an array`, () => {
-        assert.ok(Array.isArray(features), `it's not an array`);
+        assert.ok(Array.isArray(entityInstance.offer.features), `it's not an array`);
       });
 
       it(`should be an array of unique values`, () => {
-        const featuresSet = new Set(features);
+        const featuresSet = new Set(entityInstance.offer.features);
 
-        assert.equal(features.length, featuresSet.size);
+        assert.equal(entityInstance.offer.features.length, featuresSet.size);
       });
 
       it(`elements should be items of features list`, () => {
-        if (!features.length) {
+        if (!entityInstance.offer.features.length) {
           return;
         }
 
-        assert.ok(features.every((i) => featuresList.includes(i)));
+        assert.ok(entityInstance.offer.features.every((i) => featuresList.includes(i)));
       });
     });
 
     describe(`description`, () => {
       it(`should be string`, () => {
-        assert.equal(typeof description, `string`);
+        assert.equal(typeof entityInstance.offer.description, `string`);
       });
     });
 
@@ -162,46 +145,44 @@ describe(`generateEntity`, () => {
       const photosList = entityConfig.offer.photos;
 
       it(`should be an array`, () => {
-        assert.ok(Array.isArray(photos), `it's not an array`);
+        assert.ok(Array.isArray(entityInstance.offer.photos), `it's not an array`);
       });
 
       it(`elements should be items of photos list`, () => {
-        if (!photos.length) {
+        if (!entityInstance.offer.photos.length) {
           return;
         }
 
-        assert.ok(photos.every((i) => photosList.includes(i)));
+        assert.ok(entityInstance.offer.photos.every((i) => photosList.includes(i)));
       });
     });
 
   });
 
   describe(`location`, () => {
-    const {location} = entityInstance;
-
     it(`should have x and y properties`, () => {
-      assert.equal(typeof location, `object`);
+      assert.equal(typeof entityInstance.location, `object`);
     });
 
     describe(`x`, () => {
       it(`should be number`, () => {
-        assert.equal(typeof location.x, `number`);
+        assert.equal(typeof entityInstance.location.x, `number`);
       });
 
       it(`should be number between ${entityConfig.location.x.min} and ${entityConfig.location.x.max}`, () => {
-        assert.ok(location.x >= entityConfig.location.x.min, location.x);
-        assert.ok(location.x <= entityConfig.location.x.max, location.x);
+        assert.ok(entityInstance.location.x >= entityConfig.location.x.min, entityInstance.location.x);
+        assert.ok(entityInstance.location.x <= entityConfig.location.x.max, entityInstance.location.x);
       });
     });
 
     describe(`y`, () => {
       it(`should be number`, () => {
-        assert.equal(typeof location.y, `number`);
+        assert.equal(typeof entityInstance.location.y, `number`);
       });
 
       it(`should be number between ${entityConfig.location.y.min} and ${entityConfig.location.y.max}`, () => {
-        assert.ok(location.y >= entityConfig.location.y.min, location.y);
-        assert.ok(location.y <= entityConfig.location.y.max, location.y);
+        assert.ok(entityInstance.location.y >= entityConfig.location.y.min, entityInstance.location.y);
+        assert.ok(entityInstance.location.y <= entityConfig.location.y.max, entityInstance.location.y);
       });
     });
   });
