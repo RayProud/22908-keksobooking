@@ -1,4 +1,4 @@
-const generateEntity = require(`../src/generateEntity`);
+const generateEntity = require(`../src/generate-entity`);
 const entityConfig = require(`../src/config`).entity;
 const assert = require(`assert`);
 const url = require(`url`);
@@ -8,7 +8,7 @@ const SECS_IN_A_DAY = 216000;
 const POTENTIAL_LAG_IN_SECS = 10;
 
 /* eslint-disable max-nested-callbacks */
-describe(`generateEntity`, () => {
+describe(`generate-entity`, () => {
   let entityInstance;
 
   beforeEach(() => {
