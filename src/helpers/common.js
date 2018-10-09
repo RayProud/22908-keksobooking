@@ -1,5 +1,5 @@
 function shuffle(array) {
-  if (!Array.isArray) {
+  if (!Array.isArray(array)) {
     throw new TypeError(`Argument should be an array`);
   }
 
@@ -33,7 +33,7 @@ function generateRandomString() {
 }
 
 function getRandomItemFromArray(array) {
-  if (!Array.isArray) {
+  if (!Array.isArray(array)) {
     throw new TypeError(`Argument should be an array`);
   }
 
@@ -46,9 +46,24 @@ function getRandomItemFromArray(array) {
   return array[getRandomNumberInRange(0, length)];
 }
 
+function getRandomSample(array) {
+  if (!Array.isArray(array)) {
+    throw new TypeError(`Argument should be an array`);
+  }
+
+  const length = array.length;
+
+  if (length <= 1) {
+    return array;
+  }
+
+  return shuffle(array).slice(0, getRandomNumberInRange(0, length));
+}
+
 module.exports = {
   shuffle,
   getRandomNumberInRange,
   generateRandomString,
   getRandomItemFromArray,
+  getRandomSample,
 };

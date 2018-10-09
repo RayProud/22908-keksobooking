@@ -1,17 +1,14 @@
 const {
   generateAvatar,
-  generateTitle,
   generateLocation,
   generateDate,
-  generatePrice,
-  generateType,
-  generateRooms,
-  generateGuests,
-  generateCheckin,
-  generateCheckout,
-  generateFeatures,
-  generatePhotos,
 } = require(`./helpers/entity`);
+const {
+  shuffle,
+  getRandomNumberInRange,
+  getRandomItemFromArray,
+  getRandomSample,
+} = require(`./helpers/common`);
 
 function generateEntity(entityConfig) {
   const {offer: {title, price, type, rooms, guests, checkin, checkout, features, photos}, date} = entityConfig;
@@ -23,17 +20,17 @@ function generateEntity(entityConfig) {
     },
 
     offer: {
-      title: generateTitle(title),
+      title: getRandomItemFromArray(title.values),
       address: `${location.x}, ${location.y}`,
-      price: generatePrice(price),
-      type: generateType(type),
-      rooms: generateRooms(rooms),
-      guests: generateGuests(guests),
-      checkin: generateCheckin(checkin),
-      checkout: generateCheckout(checkout),
-      features: generateFeatures(features),
+      price: getRandomNumberInRange(price.max, price.min, true),
+      type: getRandomItemFromArray(type.values),
+      rooms: getRandomNumberInRange(rooms.max, rooms.min, true),
+      guests: getRandomNumberInRange(guests.max, guests.min, true),
+      checkin: getRandomItemFromArray(checkin.values),
+      checkout: getRandomItemFromArray(checkout.values),
+      features: getRandomSample(features),
       description: ``,
-      photos: generatePhotos(photos),
+      photos: shuffle(photos),
     },
 
     location,

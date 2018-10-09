@@ -1,18 +1,10 @@
 const {
-  shuffle,
   getRandomNumberInRange,
   generateRandomString,
-  getRandomItemFromArray,
 } = require(`./common`);
 
 function generateAvatar() {
   return `https://robohash.org/${generateRandomString()}`;
-}
-
-function generateTitle(title) {
-  const {values} = title;
-
-  return getRandomItemFromArray(values);
 }
 
 function generateLocation(location) {
@@ -34,63 +26,8 @@ function generateDate(date) {
   return getRandomNumberInRange(dateSinceInUnix, todayInUnix, true);
 }
 
-function generatePrice(price) {
-  const {max, min} = price;
-
-  return getRandomNumberInRange(max, min, true);
-}
-
-function generateType(type) {
-  const {values} = type;
-
-  return getRandomItemFromArray(values);
-}
-
-function generateRooms(rooms) {
-  const {min, max} = rooms;
-
-  return getRandomNumberInRange(min, max, true);
-}
-
-function generateGuests(guests) {
-  const {min, max} = guests;
-
-  return getRandomNumberInRange(min, max, true);
-}
-
-function generateCheckin(checkin) {
-  const {values} = checkin;
-
-  return getRandomItemFromArray(values);
-}
-
-function generateCheckout(checkout) {
-  const {values} = checkout;
-
-  return getRandomItemFromArray(values);
-}
-
-function generateFeatures(features) {
-  const featuresLength = features.length;
-
-  return shuffle(features).slice(0, getRandomNumberInRange(0, featuresLength));
-}
-
-function generatePhotos(photos) {
-  return shuffle(photos);
-}
-
 module.exports = {
   generateAvatar,
-  generateTitle,
   generateLocation,
   generateDate,
-  generatePrice,
-  generateType,
-  generateRooms,
-  generateGuests,
-  generateCheckin,
-  generateCheckout,
-  generateFeatures,
-  generatePhotos,
 };
