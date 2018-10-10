@@ -3,12 +3,12 @@ const commands = require(`./commands/command-loader`);
 
 // а эти три команды — стандартный набор и вообще исключительные случаи
 const error = require(`./commands/error`);
-const greet = require(`./commands/greet`);
+const main = require(`./commands/main`);
 const help = require(`./commands/help`);
 
 function execute(cmd) {
   if (!cmd) {
-    greet.execute();
+    main.execute();
     return;
   }
 

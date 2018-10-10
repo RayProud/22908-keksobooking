@@ -60,10 +60,15 @@ function getRandomSample(array) {
   return shuffle(array).slice(0, getRandomNumberInRange(0, length));
 }
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 module.exports = {
   shuffle,
   getRandomNumberInRange,
   generateRandomString,
   getRandomItemFromArray,
   getRandomSample,
+  isNumeric,
 };
