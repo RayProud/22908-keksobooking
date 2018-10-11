@@ -32,8 +32,8 @@ async function askForAmount() {
   return parseInt(entitiesCount, 10);
 }
 
-async function checkAndWrite(fileDir, entities) {
-  await writeFile(fileDir, JSON.stringify(entities), {flag: `wx`})
+function checkAndWrite(fileDir, entities) {
+  return writeFile(fileDir, JSON.stringify(entities), {flag: `wx`})
     .catch(async (err) => {
       if (err.code === `EEXIST`) {
         const sureToRewrite = await askQuestion(colors.yellow(`This file is already exist. Are you sure you want to rewrite it? (y/N)\n`));
@@ -48,9 +48,6 @@ async function checkAndWrite(fileDir, entities) {
       }
 
       throw err;
-    })
-    .catch((err) => {
-      throw err;
     });
 }
 
@@ -60,11 +57,10 @@ module.exports = {
   async execute() {
     console.log(GREETING);
 
-    const entitiesCount = await askForAmount();
-    const entities = Array(entitiesCount).fill(generateEntity(entity));
-    const fileDir = await askQuestion(colors.blue(`Where to save?\n`));
-
     try {
+      const entitiesCount = await askForAmount();
+      const entities = Array(entitiesCount).fill(generateEntity(entity));
+      const fileDir = await askQuestion(colors.blue(`Where to save?\n`));
       await checkAndWrite(fileDir, entities);
       console.log(colors.green(`Done!\n`));
     } catch (err) {
