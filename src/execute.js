@@ -6,7 +6,7 @@ const error = require(`./commands/error`);
 const main = require(`./commands/main`);
 const help = require(`./commands/help`);
 
-function execute(cmd) {
+function execute(cmd, otherKeys) {
   if (!cmd) {
     main.execute();
     return;
@@ -18,7 +18,7 @@ function execute(cmd) {
   }
 
   try {
-    commands[cmd].execute();
+    commands[cmd].execute(...otherKeys);
   } catch (_) {
     error.execute(cmd);
     process.exit(1);
