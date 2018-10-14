@@ -6,6 +6,7 @@ const app = express();
 
 app.use(express.static(normalize(`${__dirname}/../../static`)));
 
+
 module.exports = {
   name: `server`,
   description: `Runs the server`,
