@@ -2,7 +2,6 @@ const request = require(`supertest`);
 const assert = require(`assert`);
 
 const app = require(`../src/commands/server`).execute();
-console.log(`app`, app);
 
 describe(`GET /api/offers`, () => {
   it(`without params responds with json`, () => {
