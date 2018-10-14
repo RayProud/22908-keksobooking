@@ -5,7 +5,7 @@ const url = require(`url`);
 const fs = require(`fs`);
 const {promisify} = require(`util`);
 const readfile = promisify(fs.readFile);
-const {extname, join} = require(`path`);
+const {extname, normalize} = require(`path`);
 
 const hostname = `127.0.0.1`;
 
@@ -37,37 +37,36 @@ function resolveFileAddress(pathname) {
       address += pathname;
   }
 
-  return join(address);
+  return normalize(address);
 }
 
-const readFile = async (path, res) => {
+const sendFile = async (path, res) => {
   const data = await readfile(path);
   res.setHeader(`content-type`, getContentTypePath(path));
   res.end(data);
 };
 
-const server = http.createServer((req, res) => {
-  const {pathname} = url.parse(req.url);
+const server = http.createServer(async (req, res) => {
+  try {
+    const {pathname} = url.parse(req.url);
+    const fileAddress = resolveFileAddress(pathname);
 
-  (async () => {
-    try {
-      const fileAddress = resolveFileAddress(pathname);
+    res.statusCode = 200;
+    res.statusMessage = `OK`;
 
-      res.statusCode = 200;
-      res.statusMessage = `OK`;
-
-      await readFile(fileAddress, res);
-    } catch (err) {
+    await sendFile(fileAddress, res);
+  } catch (err) {
+    if (err.code === `ENOENT`) {
       res.writeHead(404, `Not Found`);
       res.end();
+      return;
     }
-  })().catch((err) => {
-    res.writeHead(500, err.message, {
-      'content-type': `text/plain`,
-    });
 
+    res.writeHead(500, err.message, {
+      [`content-type`]: `text/plain`,
+    });
     res.end(err.message);
-  });
+  }
 });
 
 module.exports = {
