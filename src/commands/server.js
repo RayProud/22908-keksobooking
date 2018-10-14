@@ -15,5 +15,7 @@ module.exports = {
     }
 
     app.listen(port, () => console.log(colors.green(`The server is listening on ${port}`)));
+
+    return app;
   }
 };

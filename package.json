@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test:lint": "eslint .",
+    "test:lint:fix": "eslint . --fix",
     "test:mocha": "mocha",
     "test": "npm run test:lint && npm run test:mocha"
   },
