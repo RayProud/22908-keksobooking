@@ -3,6 +3,7 @@ const assert = require(`assert`);
 
 const app = require(`../src/commands/server`).execute();
 
+/* eslint-disable max-nested-callbacks */
 describe(`GET /api/offers`, () => {
   it(`responds with an object of data, skip, limit and total`, () => {
     return request(app)
@@ -122,3 +123,41 @@ describe(`GET /api/offers`, () => {
       });
   });
 });
+
+describe(`GET /api/offers/:date`, () => {
+  const realMockDate = 1539450629;
+  const randomMockDate = 1511110629;
+
+  it(`with real date responds with an object with the same date which was in the request`, () => {
+    return request(app)
+      .get(`/api/offers/${realMockDate}`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(200)
+      .then((response) => {
+        const responseKeys = Object.keys(response);
+        const {date} = response;
+
+        assert.ok(responseKeys.length > 0, `there should be lots of keys`);
+        assert.ok(responseKeys.every((i) => response[i] !== undefined), `every key in the response object shouldn't represent undefined`);
+        assert.deepEqual(realMockDate, date, `date in the response should be the same as it was in the request`);
+      });
+  });
+
+  it(`with fake date responds with 404 Not Found in application/json`, () => {
+    return request(app)
+      .get(`/api/offers/${randomMockDate}`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(400);
+  });
+
+  it(`with fake date responds with 404 Not Found in text/html`, () => {
+    return request(app)
+      .get(`/api/offers/${randomMockDate}`)
+      .set(`Accept`, `text/html`)
+      .expect(`Content-Type`, /text\/html/)
+      .expect(400);
+  });
+});
+/* eslint-enable max-nested-callbacks */

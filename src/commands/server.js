@@ -5,7 +5,7 @@ const express = require(`express`);
 const app = express();
 
 app.use(express.static(normalize(`${__dirname}/../../static`)));
-
+app.disable(`x-powered-by`);
 
 module.exports = {
   name: `server`,
