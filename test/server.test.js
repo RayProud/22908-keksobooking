@@ -87,7 +87,7 @@ describe(`GET /api/offers`, () => {
       .expect(`Content-Type`, /json/)
       .expect(400)
       .then((response) => {
-        const [firstError] = response;
+        const [firstError] = response.body;
         const {error, fieldName, errorMessage} = firstError;
 
         assert.deepEqual(error, `Validation Error`);
@@ -111,7 +111,7 @@ describe(`GET /api/offers`, () => {
       .expect(`Content-Type`, /json/)
       .expect(400)
       .then((response) => {
-        const [firstError, secondError] = response;
+        const [firstError, secondError] = response.body;
 
         assert.deepEqual(firstError.error, `Validation Error`);
         assert.deepEqual(firstError.fieldName, `limit`);
@@ -124,40 +124,72 @@ describe(`GET /api/offers`, () => {
   });
 });
 
-describe(`GET /api/offers/:date`, () => {
-  const realMockDate = 1539450629;
+describe.only(`GET /api/offers/:date`, () => {
+  const realMockDate = 1538317798;
   const randomMockDate = 1511110629;
 
-  it(`with real date responds with an object with the same date which was in the request`, () => {
+  it(`with real date responds with an object with the same date which was in the request`, async () => {
     return request(app)
       .get(`/api/offers/${realMockDate}`)
       .set(`Accept`, `application/json`)
       .expect(`Content-Type`, /json/)
       .expect(200)
       .then((response) => {
-        const responseKeys = Object.keys(response);
-        const {date} = response;
+        const {body} = response;
+        const responseKeys = Object.keys(body);
+        const {date} = body;
 
         assert.ok(responseKeys.length > 0, `there should be lots of keys`);
-        assert.ok(responseKeys.every((i) => response[i] !== undefined), `every key in the response object shouldn't represent undefined`);
+        assert.ok(responseKeys.every((i) => body[i] !== undefined), `every key in the response object shouldn't represent undefined`);
         assert.deepEqual(realMockDate, date, `date in the response should be the same as it was in the request`);
       });
   });
 
-  it(`with fake date responds with 404 Not Found in application/json`, () => {
+  it(`with fake date responds with 404 Not Found in application/json`, async () => {
     return request(app)
       .get(`/api/offers/${randomMockDate}`)
       .set(`Accept`, `application/json`)
       .expect(`Content-Type`, /json/)
-      .expect(400);
+      .expect(404)
+      .then((response) => {
+        const [firstError] = response.body;
+        const {error, errorMessage} = firstError;
+
+        assert.deepEqual(error, `Not Found`);
+        assert.deepEqual(errorMessage, `offer with date equals to ${randomMockDate} wasn't found`);
+      });
   });
 
-  it(`with fake date responds with 404 Not Found in text/html`, () => {
+  it(`with fake date responds with 404 Not Found in text/html`, async () => {
     return request(app)
       .get(`/api/offers/${randomMockDate}`)
       .set(`Accept`, `text/html`)
       .expect(`Content-Type`, /text\/html/)
-      .expect(400);
+      .expect(404)
+      .expect(`offer with date equals to ${randomMockDate} wasn't found`);
+  });
+
+  it(`with wrong date format responds with Bad Request in text/html`, () => {
+    return request(app)
+      .get(`/api/offers/sdlfj`)
+      .set(`Accept`, `text/html`)
+      .expect(`Content-Type`, /text\/html/)
+      .expect(400)
+      .expect(`date should be number`);
+  });
+
+  it(`with wrong date format responds with Bad Request in application/json`, () => {
+    return request(app)
+      .get(`/api/offers/sdlfj`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(400)
+      .then((response) => {
+        const [firstError] = response.body;
+
+        assert.deepEqual(firstError.error, `Bad Request`);
+        assert.deepEqual(firstError.errorMessage, `date should be number`);
+      });
   });
 });
 /* eslint-enable max-nested-callbacks */
