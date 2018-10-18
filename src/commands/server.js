@@ -4,37 +4,26 @@ const {normalize} = require(`path`);
 const express = require(`express`);
 const app = express();
 const offersRouter = require(`./server/routes/offers-router`);
+const {generateHtmlError, generateJSONError} = require(`./server/errors-formatter`);
+const NotImplementedError = require(`./server/errors/not-implemented-error`);
 
 app.use(express.static(normalize(`${__dirname}/../../static`)));
 app.disable(`x-powered-by`);
 
 app.use(`/api/offers`, offersRouter);
 
+app.use((req, _res) => {
+  throw new NotImplementedError(`${req.path} is not implemented yet`);
+});
+
 app.use((err, req, res, _next) => {
   if (err) {
-    const {
-      code = 500,
-      error = `Internal Error`,
-      errors = [],
-    } = err;
-
     const doesAcceptHtml = req.accepts(`html`) === `html`;
-
-    let errorMessage = err.errorMessage || `Server has fallen into unrecoverable problem.`;
-
-    if (errors.length) {
-      errorMessage = errors.reduce((prev, cur) => {
-        const currentErrMsg = `${cur.fieldName} ${cur.errorMessage}`;
-
-        return prev ? `${prev}, ${currentErrMsg}` : currentErrMsg;
-      }, ``);
-    }
-
-    const errorsArray = errors.length ? errors : [{code, error, errorMessage}];
+    const errorMsg = doesAcceptHtml ? generateHtmlError(err) : generateJSONError(err);
 
     res
-      .status(code)
-      .send(doesAcceptHtml ? errorMessage : errorsArray);
+      .status(err.code)
+      .send(errorMsg);
   }
 });
 

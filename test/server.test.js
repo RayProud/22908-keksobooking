@@ -4,6 +4,24 @@ const assert = require(`assert`);
 const app = require(`../src/commands/server`).execute();
 
 /* eslint-disable max-nested-callbacks */
+describe(`GET /randomMethod`, () => {
+  it(`responds with 501 in application/json`, () => {
+    return request(app)
+      .get(`/randomUrl`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(501);
+  });
+
+  it(`responds with 501 in text/html`, () => {
+    return request(app)
+      .get(`/randomUrl`)
+      .set(`Accept`, `text/html`)
+      .expect(`Content-Type`, /text\/html/)
+      .expect(501);
+  });
+});
+
 describe(`GET /api/offers`, () => {
   it(`responds with an object of data, skip, limit and total`, () => {
     return request(app)
@@ -92,7 +110,7 @@ describe(`GET /api/offers`, () => {
 
         assert.deepEqual(error, `Validation Error`);
         assert.deepEqual(fieldName, `skip`);
-        assert.deepEqual(errorMessage, `has to be number`);
+        assert.deepEqual(errorMessage, `should be number`);
       });
   });
 
@@ -101,7 +119,8 @@ describe(`GET /api/offers`, () => {
       .get(`/api/offers?skip=asd`)
       .set(`Accept`, `text/html`)
       .expect(`Content-Type`, /text\/html/)
-      .expect(400);
+      .expect(400)
+      .expect(`skip should be number`);
   });
 
   it(`?limit=&skip= responds with Bad Request in application/json`, () => {
@@ -115,16 +134,25 @@ describe(`GET /api/offers`, () => {
 
         assert.deepEqual(firstError.error, `Validation Error`);
         assert.deepEqual(firstError.fieldName, `limit`);
-        assert.deepEqual(firstError.errorMessage, `has to be number`);
+        assert.deepEqual(firstError.errorMessage, `should be number`);
 
         assert.deepEqual(secondError.error, `Validation Error`);
         assert.deepEqual(secondError.fieldName, `skip`);
-        assert.deepEqual(secondError.errorMessage, `has to be number`);
+        assert.deepEqual(secondError.errorMessage, `should be number`);
       });
+  });
+
+  it(`?limit=&skip= responds with Bad Request in text/html`, () => {
+    return request(app)
+      .get(`/api/offers?limit=&skip=`)
+      .set(`Accept`, `text/html`)
+      .expect(`Content-Type`, /html/)
+      .expect(400)
+      .expect(`limit should be number, skip should be number`);
   });
 });
 
-describe.only(`GET /api/offers/:date`, () => {
+describe(`GET /api/offers/:date`, () => {
   const realMockDate = 1538317798;
   const randomMockDate = 1511110629;
 
@@ -187,8 +215,9 @@ describe.only(`GET /api/offers/:date`, () => {
       .then((response) => {
         const [firstError] = response.body;
 
-        assert.deepEqual(firstError.error, `Bad Request`);
-        assert.deepEqual(firstError.errorMessage, `date should be number`);
+        assert.deepEqual(firstError.error, `Validation Error`);
+        assert.deepEqual(firstError.fieldName, `date`);
+        assert.deepEqual(firstError.errorMessage, `should be number`);
       });
   });
 });

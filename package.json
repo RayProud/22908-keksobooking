@@ -4,9 +4,10 @@
   "description": "* Студент: [Роман Прудников](https://up.htmlacademy.ru/nodejs/2/user/22908). * Наставник: [Александр Бренчев](https://htmlacademy.ru/profile/id59895)",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js --server",
     "test:lint": "eslint .",
     "test:lint:fix": "eslint . --fix",
-    "test:mocha": "mocha",
+    "test:mocha": "mocha --exit",
     "test": "npm run test:lint && npm run test:mocha"
   },
   "repository": {
