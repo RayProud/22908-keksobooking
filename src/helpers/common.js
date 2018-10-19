@@ -64,6 +64,14 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+function exists(n) {
+  return !!n;
+}
+
+function isNil(n) {
+  return n == null; /* eslint-disable-line eqeqeq */
+}
+
 module.exports = {
   shuffle,
   getRandomNumberInRange,
@@ -71,4 +79,6 @@ module.exports = {
   getRandomItemFromArray,
   getRandomSample,
   isNumeric,
+  exists,
+  isNil,
 };

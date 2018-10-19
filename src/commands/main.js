@@ -59,7 +59,7 @@ module.exports = {
 
     try {
       const entitiesCount = await askForAmount();
-      const entities = Array(entitiesCount).fill(generateEntity(entity));
+      const entities = Array.from({length: entitiesCount}, () => generateEntity(entity));
       const fileDir = await askQuestion(colors.blue(`Where to save?\n`));
       await checkAndWrite(fileDir, entities);
       console.log(colors.green(`Done!\n`));

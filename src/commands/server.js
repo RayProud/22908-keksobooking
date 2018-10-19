@@ -1,71 +1,29 @@
-const http = require(`http`);
 const colors = require(`colors`);
 const {isNumeric} = require(`../helpers/common`);
-const url = require(`url`);
-const fs = require(`fs`);
-const {promisify} = require(`util`);
-const readfile = promisify(fs.readFile);
-const {extname, normalize} = require(`path`);
+const {normalize} = require(`path`);
+const express = require(`express`);
+const app = express();
+const offersRouter = require(`./server/routes/offers-router`);
+const {generateHtmlError, generateJSONError} = require(`./server/errors-formatter`);
+const NotImplementedError = require(`./server/errors/not-implemented-error`);
 
-const hostname = `127.0.0.1`;
+app.use(express.static(normalize(`${__dirname}/../../static`)));
+app.disable(`x-powered-by`);
 
-function getContentTypePath(path) {
-  const extsMap = {
-    css: `text/css`,
-    html: `text/html; charset=UTF-8`,
-    jpg: `image/jpeg`,
-    jpeg: `image/jpeg`,
-    png: `image/png`,
-    svg: `image/svg+xml`,
-    ico: `image/x-icon`,
-  };
+app.use(`/api/offers`, offersRouter);
 
-  // extension is with a leading dot
-  const ext = extname(path).slice(1);
+app.use((req, _res) => {
+  throw new NotImplementedError(`${req.path} is not implemented yet`);
+});
 
-  return extsMap[ext] || `text/plain`;
-}
+app.use((err, req, res, _next) => {
+  if (err) {
+    const doesAcceptHtml = req.accepts(`html`) === `html`;
+    const errorMsg = doesAcceptHtml ? generateHtmlError(err) : generateJSONError(err);
 
-function resolveFileAddress(pathname) {
-  let address = `${__dirname}../../../static`;
-
-  switch (pathname) {
-    case `/`:
-      address += `/index.html`;
-      break;
-    default:
-      address += pathname;
-  }
-
-  return normalize(address);
-}
-
-const sendFile = async (path, res) => {
-  const data = await readfile(path);
-  res.setHeader(`content-type`, getContentTypePath(path));
-  res.end(data);
-};
-
-const server = http.createServer(async (req, res) => {
-  try {
-    const {pathname} = url.parse(req.url);
-    const fileAddress = resolveFileAddress(pathname);
-
-    res.statusCode = 200;
-    res.statusMessage = `OK`;
-
-    await sendFile(fileAddress, res);
-  } catch (err) {
-    if (err.code === `ENOENT`) {
-      res.writeHead(404, `Not Found`);
-      res.end();
-      return;
-    }
-
-    res.writeHead(500, err.message, {
-      [`content-type`]: `text/plain`,
-    });
-    res.end(err.message);
+    res
+      .status(err.code)
+      .send(errorMsg);
   }
 });
 
@@ -77,13 +35,8 @@ module.exports = {
       console.warn(colors.yellow(`'port' argument should be a number. The server will try listen on 3000.`));
     }
 
-    server.listen(port, hostname, (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+    app.listen(port, () => console.log(colors.green(`The server is listening on ${port}`)));
 
-      console.log(colors.green(`The server is listening on ${port}`));
-    });
+    return app;
   }
 };
