@@ -3,6 +3,12 @@ const assert = require(`assert`);
 
 const app = require(`../src/commands/server`).execute();
 
+function assertBodyAreNotNil(body) {
+  const responseKeys = Object.keys(body);
+  assert.ok(responseKeys.length > 0, `there should be lots of keys`);
+  assert.ok(responseKeys.every((i) => body[i] !== undefined), `every key in the response object shouldn't represent undefined`);
+}
+
 /* eslint-disable max-nested-callbacks */
 describe(`GET /randomMethod`, () => {
   it(`responds with 501 in application/json`, () => {
@@ -30,7 +36,10 @@ describe(`GET /api/offers`, () => {
       .expect(`Content-Type`, /json/)
       .expect(200)
       .then((response) => {
-        const {skip, limit, total, data} = response.body;
+        const {body} = response;
+        const {skip, limit, total, data} = body;
+
+        assertBodyAreNotNil(body);
 
         assert.ok(Array.isArray(data), `offers should be an array`);
         assert.ok(typeof skip === `number`, `skip should be number`);
@@ -49,11 +58,33 @@ describe(`GET /api/offers`, () => {
       .expect(`Content-Type`, /json/)
       .expect(200)
       .then((response) => {
-        const {limit, data} = response.body;
+        const {body} = response;
+        const {data, limit} = body;
         const offersLength = data.length;
 
+        assertBodyAreNotNil(body);
         assert.ok(offersLength <= limit, `there is no chance offers length is more than limit param`);
       });
+  });
+
+  it(`?skip=5 responds with an object which is 5 element moved from ?skip=0`, async () => {
+    const responseWithFiveSkiped = await request(app)
+      .get(`/api/offers?skip=5`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(200)
+      .then((response) => response.body.data);
+
+    const responseWithZeroSkiped = await request(app)
+      .get(`/api/offers`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(200)
+      .then((response) => response.body.data);
+
+    // date is unique in these data, so we can consider it as an id
+    // @TODO: refactor using ids after MongoDB task
+    assert.ok(responseWithFiveSkiped[0].date === responseWithZeroSkiped[5].date);
   });
 
   it(`?skip=5 responds with different skip`, () => {
@@ -63,7 +94,10 @@ describe(`GET /api/offers`, () => {
       .expect(`Content-Type`, /json/)
       .expect(200)
       .then((response) => {
-        const {skip, limit} = response.body;
+        const {body} = response;
+        const {skip, limit} = body;
+
+        assertBodyAreNotNil(body);
 
         assert.deepEqual(skip, 5);
         assert.deepEqual(limit, 20, `limit should be 20 by default`);
@@ -77,7 +111,10 @@ describe(`GET /api/offers`, () => {
       .expect(`Content-Type`, /json/)
       .expect(200)
       .then((response) => {
-        const {skip, limit} = response.body;
+        const {body} = response;
+        const {skip, limit} = body;
+
+        assertBodyAreNotNil(body);
 
         assert.deepEqual(skip, 0, `skip should be zero by default`);
         assert.deepEqual(limit, 5);
@@ -91,7 +128,10 @@ describe(`GET /api/offers`, () => {
       .expect(`Content-Type`, /json/)
       .expect(200)
       .then((response) => {
-        const {skip, limit} = response.body;
+        const {body} = response;
+        const {skip, limit} = body;
+
+        assertBodyAreNotNil(body);
 
         assert.deepEqual(skip, 10);
         assert.deepEqual(limit, 6);
@@ -164,11 +204,9 @@ describe(`GET /api/offers/:date`, () => {
       .expect(200)
       .then((response) => {
         const {body} = response;
-        const responseKeys = Object.keys(body);
         const {date} = body;
 
-        assert.ok(responseKeys.length > 0, `there should be lots of keys`);
-        assert.ok(responseKeys.every((i) => body[i] !== undefined), `every key in the response object shouldn't represent undefined`);
+        assertBodyAreNotNil(body);
         assert.deepEqual(realMockDate, date, `date in the response should be the same as it was in the request`);
       });
   });
