@@ -259,4 +259,126 @@ describe(`GET /api/offers/:date`, () => {
       });
   });
 });
+
+describe(`POST api/offers`, () => {
+  it(`with data in json responds with the same object in application/json`, () => {
+    const mockOffer = {
+      author: {
+        avatar: `https://robohash.org/skfejne`
+      },
+      offer: {
+        title: `Некрасивый негостеприимный домик`,
+        address: `310, 450`,
+        price: 561653,
+        type: `house`,
+        rooms: 4,
+        guests: 8,
+        checkin: `12:00`,
+        checkout: `13:00`,
+        features: [
+          `parking`,
+          `wifi`,
+          `dishwasher`
+        ],
+        description: ``,
+        photos: [
+          `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+          `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+          `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
+        ]
+      },
+      location: {
+        x: 310,
+        y: 450
+      },
+      date: 1538484899
+    };
+
+    return request(app)
+      .post(`/api/offers`)
+      .send(mockOffer)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(200)
+      .then((response) => {
+        const {body} = response;
+
+        assertBodyAreNotNil(body);
+        assert.deepEqual(body, mockOffer);
+      });
+  });
+
+  it(`with text data in multipart/form-data responds with the same object in application/json`, () => {
+    const testNameField = `A beautiful name`;
+    const desiredResponse = {
+      name: testNameField
+    };
+
+    return request(app)
+      .post(`/api/offers`)
+      .field(`name`, testNameField)
+      .set(`Content-Type`, `multipart/form-data`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(200)
+      .then((response) => {
+        const {body} = response;
+
+        assertBodyAreNotNil(body);
+        assert.deepEqual(body, desiredResponse);
+      });
+  });
+
+  it(`with img data in multipart/form-data responds with the same object in application/json`, () => {
+    const testImgName = `keks.png`;
+    const desiredResponse = {
+      avatar: {
+        name: testImgName
+      }
+    };
+
+    return request(app)
+      .post(`/api/offers`)
+      .attach(`avatar`, `${__dirname}/../mocks/${testImgName}`)
+      .set(`Content-Type`, `multipart/form-data`)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(200)
+      .then((response) => {
+        const {body} = response;
+
+        assertBodyAreNotNil(body);
+        assert.deepEqual(body, desiredResponse);
+      });
+  });
+});
+
+describe(`POST api/offers/randomUrl`, () => {
+  it(`responds with Bad Request in text/html`, () => {
+    const notImplementedUrl = `/api/offers/randomUrl`;
+
+    return request(app)
+      .post(notImplementedUrl)
+      .set(`Accept`, `text/html`)
+      .expect(`Content-Type`, /text\/html/)
+      .expect(501)
+      .expect(`${notImplementedUrl} is not implemented yet`);
+  });
+
+  it(`responds with Bad Request in application/json`, () => {
+    const notImplementedUrl = `/api/offers/randomUrl`;
+
+    return request(app)
+      .post(notImplementedUrl)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(501)
+      .then((response) => {
+        const [firstError] = response.body;
+
+        assert.deepEqual(firstError.error, `Not Implemented`);
+        assert.deepEqual(firstError.errorMessage, `${notImplementedUrl} is not implemented yet`);
+      });
+  });
+});
 /* eslint-enable max-nested-callbacks */

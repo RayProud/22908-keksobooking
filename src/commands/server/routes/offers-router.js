@@ -1,7 +1,14 @@
-const offersRouter = require(`express`).Router(); /* eslint-disable-line new-cap */
+const express = require(`express`);
+const offersRouter = express.Router(); /* eslint-disable-line new-cap */
+const multer = require(`multer`);
+
+const upload = multer({storage: multer.memoryStorage()});
+
 const mockData = require(`../../../../mocks/test-data.json`);
 const NotFoundError = require(`../errors/not-found-error`);
 const validate = require(`../validate`);
+
+const jsonParser = express.json();
 
 const DEFAULT_SKIP_AMOUNT = 0;
 const DEFAULT_LIMIT_AMOUNT = 20;
@@ -34,6 +41,16 @@ offersRouter.get(`/:date`, (req, res) => {
   }
 
   res.send(desiredOffer);
+});
+
+offersRouter.post(`/`, jsonParser, upload.single(`avatar`), (req, res) => {
+  const {body, file} = req;
+
+  if (file) {
+    body.avatar = {name: file.originalname};
+  }
+
+  res.send(body);
 });
 
 module.exports = offersRouter;
