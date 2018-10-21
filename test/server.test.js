@@ -489,9 +489,9 @@ describe(`POST api/offers`, () => {
 });
 
 describe(`POST api/offers/randomUrl`, () => {
-  it(`responds with Not Implemented in text/html`, () => {
-    const notImplementedUrl = `/api/offers/randomUrl`;
+  const notImplementedUrl = `/api/offers/randomUrl`;
 
+  it(`responds with Not Implemented in text/html`, () => {
     return request(app)
       .post(notImplementedUrl)
       .set(`Accept`, `text/html`)
@@ -501,8 +501,6 @@ describe(`POST api/offers/randomUrl`, () => {
   });
 
   it(`responds with Not Implemented in application/json`, () => {
-    const notImplementedUrl = `/api/offers/randomUrl`;
-
     return request(app)
       .post(notImplementedUrl)
       .set(`Accept`, `application/json`)

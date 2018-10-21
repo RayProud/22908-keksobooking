@@ -42,5 +42,72 @@ module.exports = {
     date: {
       daysTillNow: 7,
     },
+  },
+  offerSchema: {
+    title: {
+      type: `string`,
+      isRequired: true,
+      length: {
+        min: 30,
+        max: 140,
+      }
+    },
+    type: {
+      type: `string`,
+      isRequired: true,
+      values: [`flat`, `palace`, `house`, `bungalo`],
+    },
+    price: {
+      type: `number`,
+      isRequired: true,
+      range: {
+        min: 1,
+        max: 100000,
+      }
+    },
+    address: {
+      type: `string`,
+      isRequired: true,
+      length: {
+        min: 0,
+        max: 100,
+      },
+      mask: /^\d+,\s*\d+$/gi
+    },
+    checkin: {
+      type: `string`,
+      isRequired: true,
+      mask: /^\d{2}:\d{2}$/gi
+    },
+    checkout: {
+      type: `string`,
+      isRequired: true,
+      mask: /^\d{2}:\d{2}$/gi
+    },
+    rooms: {
+      type: `number`,
+      isRequired: true,
+      range: {
+        min: 0,
+        max: 1000,
+      }
+    },
+    features: {
+      type: `set`,
+      isRequired: false,
+      values: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
+    },
+    avatar: {
+      type: `image`,
+      isRequired: false,
+    },
+    preview: {
+      type: `image`,
+      isRequired: false,
+    },
+    name: {
+      type: `string`,
+      isRequired: false,
+    },
   }
 };
