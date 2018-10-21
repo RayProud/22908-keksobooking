@@ -352,34 +352,144 @@ describe(`POST api/offers`, () => {
       });
   });
 
+  describe(`with wrong data`, () => {
+    const invalidOffer = {
+      title: `test title`,
+      type: `studio`,
+      address: `some, some`,
+      checkin: 12,
+      checkout: `tvelve`,
+      rooms: 1200,
+      features: [`fan`, `dishwasher`],
+      avatar: `just string`,
+      preview: 234,
+    };
 
-  describe(`with wrong title`, () => {
-    it(`of too short title responds with Bad Request in text/html`, () => {
-      const shortTitleLess30Symbols = `test title`;
+    const anotherInvalidOffer = {
+      title: `Very long title which does not fit because of its innumerous, fascinating and astonishing length we have never seen before in our entire lives`,
+      price: 1000000,
+      address: `0, 0`,
+      checkin: `12:70`,
+      checkout: ``,
+      rooms: -1200,
+      features: [`dishwasher`, `dishwasher`],
+      name: `Boris`
+    };
 
-      return request(app)
-        .post(`/api/offers`)
-        .send(shortTitleLess30Symbols)
-        .set(`Accept`, `application/json`)
-        .expect(`Content-Type`, /json/)
-        .expect(400);
+    describe(`of JSON`, () => {
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400);
+      });
+
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400);
+      });
+
+      it(`responds with Bad Request in html`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `text/html`)
+          .expect(`Content-Type`, /text\/html/)
+          .expect(400);
+      });
+
+      it(`responds with Bad Request in html`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `text/html`)
+          .expect(`Content-Type`, /text\/html/)
+          .expect(400);
+      });
     });
 
-    it(`of too long title responds with Bad Request in text/html`, () => {
-      const longTitleMore140Symbols = `Very long title which does not fit because of its innumerous, fascinating and astonishing length we have never seen before in our entire lives`;
+    describe(`of multipart/form-data`, () => {
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, invalidOffer.title)
+          .field(`type`, invalidOffer.type)
+          .field(`address`, invalidOffer.address)
+          .field(`checkin`, invalidOffer.checkin)
+          .field(`checkout`, invalidOffer.checkout)
+          .field(`rooms`, invalidOffer.rooms)
+          .field(`features`, invalidOffer.features)
+          .field(`avatar`, invalidOffer.avatar)
+          .field(`preview`, invalidOffer.preview)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400);
+      });
 
-      return request(app)
-        .post(`/api/offers`)
-        .send(longTitleMore140Symbols)
-        .set(`Accept`, `application/json`)
-        .expect(`Content-Type`, /json/)
-        .expect(400);
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, anotherInvalidOffer.title)
+          .field(`price`, anotherInvalidOffer.price)
+          .field(`address`, anotherInvalidOffer.address)
+          .field(`checkin`, anotherInvalidOffer.checkin)
+          .field(`checkout`, anotherInvalidOffer.checkout)
+          .field(`rooms`, anotherInvalidOffer.rooms)
+          .field(`features`, anotherInvalidOffer.features)
+          .field(`name`, anotherInvalidOffer.name)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400);
+      });
+
+      it(`responds with Bad Request in html`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, invalidOffer.title)
+          .field(`type`, invalidOffer.type)
+          .field(`address`, invalidOffer.address)
+          .field(`checkin`, invalidOffer.checkin)
+          .field(`checkout`, invalidOffer.checkout)
+          .field(`rooms`, invalidOffer.rooms)
+          .field(`features`, invalidOffer.features)
+          .field(`avatar`, invalidOffer.avatar)
+          .field(`preview`, invalidOffer.preview)
+          .set(`Accept`, `text/html`)
+          .expect(`Content-Type`, /text\/html/)
+          .expect(400);
+      });
+
+      it(`responds with Bad Request in html`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, anotherInvalidOffer.title)
+          .field(`price`, anotherInvalidOffer.price)
+          .field(`address`, anotherInvalidOffer.address)
+          .field(`checkin`, anotherInvalidOffer.checkin)
+          .field(`checkout`, anotherInvalidOffer.checkout)
+          .field(`rooms`, anotherInvalidOffer.rooms)
+          .field(`features`, anotherInvalidOffer.features)
+          .field(`name`, anotherInvalidOffer.name)
+          .set(`Accept`, `text/html`)
+          .expect(`Content-Type`, /text\/html/)
+          .expect(400);
+      });
     });
   });
 });
 
 describe(`POST api/offers/randomUrl`, () => {
-  it(`responds with Bad Request in text/html`, () => {
+  it(`responds with Not Implemented in text/html`, () => {
     const notImplementedUrl = `/api/offers/randomUrl`;
 
     return request(app)
@@ -390,7 +500,7 @@ describe(`POST api/offers/randomUrl`, () => {
       .expect(`${notImplementedUrl} is not implemented yet`);
   });
 
-  it(`responds with Bad Request in application/json`, () => {
+  it(`responds with Not Implemented in application/json`, () => {
     const notImplementedUrl = `/api/offers/randomUrl`;
 
     return request(app)
