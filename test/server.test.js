@@ -259,4 +259,53 @@ describe(`GET /api/offers/:date`, () => {
       });
   });
 });
+
+describe(`POST api/offers`, () => {
+  const mockOffer = {
+    author: {
+      avatar: `https://robohash.org/skfejne`
+    },
+    offer: {
+      title: `Некрасивый негостеприимный домик`,
+      address: `310, 450`,
+      price: 561653,
+      type: `house`,
+      rooms: 4,
+      guests: 8,
+      checkin: `12:00`,
+      checkout: `13:00`,
+      features: [
+        `parking`,
+        `wifi`,
+        `dishwasher`
+      ],
+      description: ``,
+      photos: [
+        `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+        `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+        `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
+      ]
+    },
+    location: {
+      x: 310,
+      y: 450
+    },
+    date: 1538484899
+  };
+
+  it(`responds with the same object in application/json`, () => {
+    return request(app)
+      .post(`/api/offers`)
+      .send(mockOffer)
+      .set(`Accept`, `application/json`)
+      .expect(`Content-Type`, /json/)
+      .expect(200)
+      .then((response) => {
+        const {body} = response;
+
+        assertBodyAreNotNil(body);
+        assert.deepEqual(body, mockOffer);
+      });
+  });
+});
 /* eslint-enable max-nested-callbacks */
