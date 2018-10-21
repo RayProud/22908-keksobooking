@@ -351,6 +351,31 @@ describe(`POST api/offers`, () => {
         assert.deepEqual(body, desiredResponse);
       });
   });
+
+
+  describe(`with wrong title`, () => {
+    it(`of too short title responds with Bad Request in text/html`, () => {
+      const shortTitleLess30Symbols = `test title`;
+
+      return request(app)
+        .post(`/api/offers`)
+        .send(shortTitleLess30Symbols)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(400);
+    });
+
+    it(`of too long title responds with Bad Request in text/html`, () => {
+      const longTitleMore140Symbols = `Very long title which does not fit because of its innumerous, fascinating and astonishing length we have never seen before in our entire lives`;
+
+      return request(app)
+        .post(`/api/offers`)
+        .send(longTitleMore140Symbols)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(400);
+    });
+  });
 });
 
 describe(`POST api/offers/randomUrl`, () => {
