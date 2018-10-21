@@ -1,4 +1,6 @@
 
+const {isNil} = require(`../src/helpers/common`);
+
 module.exports = {
   entity: {
     offer: {
@@ -43,7 +45,108 @@ module.exports = {
       daysTillNow: 7,
     },
   },
-  offerSchema: {
+  /* eslint-disable consistent-return */
+  validateRules: {
+    type(fieldName, value, type) {
+      if (type === `image`) {
+        const {mimetype} = value;
+
+        if (!mimetype || !(/image/gi.test(mimetype))) {
+          return {
+            fieldName,
+            errorMessage: `should be image`,
+            error: `Validation Error`,
+          };
+        }
+      } else if (type === `set`) {
+        const testSet = new Set(value);
+
+        if (testSet.size !== value.length) {
+          return {
+            fieldName,
+            errorMessage: `should be array of unique values`,
+            error: `Validation Error`,
+          };
+        }
+      } else if (typeof value !== type) {
+        return {
+          fieldName,
+          errorMessage: `should be ${type}`,
+          error: `Validation Error`,
+        };
+      }
+    },
+    isRequired(fieldName, value, isRequired) {
+      if (isRequired && isNil(value)) {
+        return {
+          fieldName,
+          errorMessage: `is required`,
+          error: `Validation Error`,
+        };
+      }
+    },
+    length(fieldName, value, {min, max}) {
+      if (value.length < min) {
+        return {
+          fieldName,
+          errorMessage: `should be more than ${min}`,
+          error: `Validation Error`,
+        };
+      } else if (value.length > max) {
+        return {
+          fieldName,
+          errorMessage: `should be less than ${max}`,
+          error: `Validation Error`,
+        };
+      }
+    },
+    oneOfValues(fieldName, value, allowedValues) {
+      if (allowedValues.indexOf(value) === -1) {
+        return {
+          fieldName,
+          errorMessage: `should be one of ${allowedValues}`,
+          error: `Validation Error`,
+        };
+      }
+    },
+    manyOfValues(fieldName, values, allowedValues) {
+      for (let i = 0; i < values.length; i++) {
+        if (allowedValues.indexOf(values[i]) === -1) {
+          return {
+            fieldName,
+            errorMessage: `only ${allowedValues} are allowed`,
+            error: `Validation Error`,
+          };
+        }
+      }
+    },
+    range(fieldName, value, {min, max}) {
+      if (value < min) {
+        return {
+          fieldName,
+          errorMessage: `should be more than ${min}`,
+          error: `Validation Error`,
+        };
+      } else if (value > max) {
+        return {
+          fieldName,
+          errorMessage: `should be less than ${max}`,
+          error: `Validation Error`,
+        };
+      }
+    },
+    mask(fieldName, value, mask) {
+      if (mask.test(value)) {
+        return {
+          fieldName,
+          errorMessage: `doesn't fit the expected format`,
+          error: `Validation Error`,
+        };
+      }
+    }
+  },
+  /* eslint-enable consistent-return */
+  offerScheme: {
     title: {
       type: `string`,
       isRequired: true,
@@ -55,7 +158,7 @@ module.exports = {
     type: {
       type: `string`,
       isRequired: true,
-      values: [`flat`, `palace`, `house`, `bungalo`],
+      oneOfValues: [`flat`, `palace`, `house`, `bungalo`],
     },
     price: {
       type: `number`,
@@ -95,7 +198,7 @@ module.exports = {
     features: {
       type: `set`,
       isRequired: false,
-      values: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
+      manyOfValues: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
     },
     avatar: {
       type: `image`,

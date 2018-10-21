@@ -6,7 +6,8 @@ const upload = multer({storage: multer.memoryStorage()});
 
 const mockData = require(`../../../../mocks/test-data.json`);
 const NotFoundError = require(`../errors/not-found-error`);
-const validate = require(`../validate`);
+const {validate, validateUsingAScheme} = require(`../validate`);
+const {offerScheme} = require(`../../../config`);
 
 const jsonParser = express.json();
 
@@ -47,8 +48,14 @@ offersRouter.post(`/`, jsonParser, upload.single(`avatar`), (req, res) => {
   const {body, file} = req;
 
   if (file) {
-    body.avatar = {name: file.originalname};
+    const {originalname, mimetype} = file;
+    body.avatar = {
+      name: originalname,
+      mimetype
+    };
   }
+
+  validateUsingAScheme(body, offerScheme);
 
   res.send(body);
 });

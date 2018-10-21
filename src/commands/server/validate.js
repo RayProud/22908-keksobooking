@@ -1,5 +1,6 @@
 const BadRequest = require(`./errors/bad-request-error`);
 const {isNumeric, exists, isNil} = require(`../../helpers/common`);
+const {validateRules} = require(`../../config`);
 
 const testMap = {
   numeric: {
@@ -36,4 +37,37 @@ const validate = (data, test) => {
   }
 };
 
-module.exports = validate;
+function validateUsingAScheme(objToValidate, scheme) {
+  const errors = Object.keys(objToValidate).reduce((prev, key) => {
+    let innerErrors = [];
+    const value = objToValidate[key];
+    const currentScheme = scheme[key];
+
+    if (currentScheme) {
+      const validationErrors = Object.keys(currentScheme).reduce((initialArray, rule) => {
+        const schemeRequirement = currentScheme[rule];
+        const validateRule = validateRules[rule];
+        const maybeError = validateRule && validateRule(key, value, schemeRequirement);
+
+        if (maybeError) {
+          initialArray.push(maybeError);
+        }
+
+        return initialArray;
+      }, []);
+
+      innerErrors = validationErrors;
+    }
+
+    return prev.concat(innerErrors);
+  }, []);
+
+  if (errors.length) {
+    throw new BadRequest(errors);
+  }
+}
+
+module.exports = {
+  validate,
+  validateUsingAScheme,
+};

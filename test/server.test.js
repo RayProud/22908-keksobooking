@@ -333,7 +333,8 @@ describe(`POST api/offers`, () => {
     const testImgName = `keks.png`;
     const desiredResponse = {
       avatar: {
-        name: testImgName
+        name: testImgName,
+        mimetype: `image/png`
       }
     };
 
@@ -383,7 +384,38 @@ describe(`POST api/offers`, () => {
           .send(invalidOffer)
           .set(`Accept`, `application/json`)
           .expect(`Content-Type`, /json/)
-          .expect(400);
+          .expect(400)
+          .then((response) => {
+            const [titleError, typeError, checkinTypeError, rooms, features, avatar, preview] = response.body;
+
+            assert.deepEqual(titleError.error, `Validation Error`);
+            assert.deepEqual(titleError.fieldName, `title`);
+            assert.deepEqual(titleError.errorMessage, `should be more than 30`);
+
+            assert.deepEqual(typeError.error, `Validation Error`);
+            assert.deepEqual(typeError.fieldName, `type`);
+            assert.deepEqual(typeError.errorMessage, `should be one of flat,palace,house,bungalo`);
+
+            assert.deepEqual(checkinTypeError.error, `Validation Error`);
+            assert.deepEqual(checkinTypeError.fieldName, `checkin`);
+            assert.deepEqual(checkinTypeError.errorMessage, `should be string`);
+
+            assert.deepEqual(rooms.error, `Validation Error`);
+            assert.deepEqual(rooms.fieldName, `rooms`);
+            assert.deepEqual(rooms.errorMessage, `should be less than 1000`);
+
+            assert.deepEqual(features.error, `Validation Error`);
+            assert.deepEqual(features.fieldName, `features`);
+            assert.deepEqual(features.errorMessage, `only wifi,dishwasher,parking,washer,elevator,conditioner are allowed`);
+
+            assert.deepEqual(avatar.error, `Validation Error`);
+            assert.deepEqual(avatar.fieldName, `avatar`);
+            assert.deepEqual(avatar.errorMessage, `should be image`);
+
+            assert.deepEqual(preview.error, `Validation Error`);
+            assert.deepEqual(preview.fieldName, `preview`);
+            assert.deepEqual(avatar.errorMessage, `should be image`);
+          });
       });
 
       it(`responds with Bad Request in json`, () => {
@@ -480,6 +512,7 @@ describe(`POST api/offers`, () => {
           .field(`rooms`, anotherInvalidOffer.rooms)
           .field(`features`, anotherInvalidOffer.features)
           .field(`name`, anotherInvalidOffer.name)
+          .attach(`avatar`, `${__dirname}/../mocks/keks.png`)
           .set(`Accept`, `text/html`)
           .expect(`Content-Type`, /text\/html/)
           .expect(400);
