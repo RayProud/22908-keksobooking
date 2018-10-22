@@ -1,7 +1,14 @@
-const {isNil} = require(`../../../helpers/common`);
+const {isNil, isNumeric} = require(`../../../helpers/common`);
 
 /* eslint-disable consistent-return */
 module.exports = {
+  isNumeric(value, shouldBeNumeric) {
+    if (shouldBeNumeric && !isNumeric(value)) {
+      return {
+        errorMessage: `should be number`,
+      };
+    }
+  },
   isArrayOfUniqueValues(value, shouldBeAnArrayOfUniqueValues) {
     const testSet = new Set(value);
 

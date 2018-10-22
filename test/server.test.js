@@ -378,7 +378,7 @@ describe(`POST api/offers`, () => {
     };
 
     describe(`of JSON`, () => {
-      it(`responds with Bad Request in json`, () => {
+      it(`responds with title error in json`, () => {
         return request(app)
           .post(`/api/offers`)
           .send(invalidOffer)
@@ -386,35 +386,107 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const [titleError, typeError, checkinTypeError, rooms, features, avatar, preview] = response.body;
+            const titleError = response.body[0];
 
             assert.deepEqual(titleError.error, `Validation Error`);
             assert.deepEqual(titleError.fieldName, `title`);
             assert.deepEqual(titleError.errorMessage, `should be more than 30`);
+          });
+      });
+
+      it(`responds with type error in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const typeError = response.body[1];
 
             assert.deepEqual(typeError.error, `Validation Error`);
             assert.deepEqual(typeError.fieldName, `type`);
             assert.deepEqual(typeError.errorMessage, `should be one of flat,palace,house,bungalo`);
+          });
+      });
+
+      it(`responds with checkin error in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const checkinTypeError = response.body[2];
 
             assert.deepEqual(checkinTypeError.error, `Validation Error`);
             assert.deepEqual(checkinTypeError.fieldName, `checkin`);
             assert.deepEqual(checkinTypeError.errorMessage, `should be string`);
+          });
+      });
+
+      it(`responds with rooms error in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const rooms = response.body[3];
 
             assert.deepEqual(rooms.error, `Validation Error`);
             assert.deepEqual(rooms.fieldName, `rooms`);
             assert.deepEqual(rooms.errorMessage, `should be less than 1000`);
+          });
+      });
+
+      it(`responds with features error in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const features = response.body[4];
 
             assert.deepEqual(features.error, `Validation Error`);
             assert.deepEqual(features.fieldName, `features`);
             assert.deepEqual(features.errorMessage, `only wifi,dishwasher,parking,washer,elevator,conditioner are allowed`);
+          });
+      });
+
+      it(`responds with avatar error in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const avatar = response.body[5];
 
             assert.deepEqual(avatar.error, `Validation Error`);
             assert.deepEqual(avatar.fieldName, `avatar`);
             assert.deepEqual(avatar.errorMessage, `should be image`);
+          });
+      });
+
+      it(`responds with preview error in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const preview = response.body[6];
 
             assert.deepEqual(preview.error, `Validation Error`);
             assert.deepEqual(preview.fieldName, `preview`);
-            assert.deepEqual(avatar.errorMessage, `should be image`);
+            assert.deepEqual(preview.errorMessage, `should be image`);
           });
       });
 
