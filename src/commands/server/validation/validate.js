@@ -1,6 +1,6 @@
-const BadRequest = require(`./errors/bad-request-error`);
-const {isNumeric, exists, isNil} = require(`../../helpers/common`);
-const {validateRules} = require(`../../config`);
+const BadRequest = require(`../errors/bad-request-error`);
+const {isNumeric, exists, isNil} = require(`../../../helpers/common`);
+const validateRules = require(`./rules`);
 
 const testMap = {
   numeric: {
@@ -47,10 +47,17 @@ function validateUsingAScheme(objToValidate, scheme) {
       const validationErrors = Object.keys(currentScheme).reduce((initialArray, rule) => {
         const schemeRequirement = currentScheme[rule];
         const validateRule = validateRules[rule];
-        const maybeError = validateRule && validateRule(key, value, schemeRequirement);
+        const maybeError = validateRule && validateRule(value, schemeRequirement);
 
         if (maybeError) {
-          initialArray.push(maybeError);
+          initialArray.push(Object.assign(
+              {},
+              maybeError,
+              {
+                fieldName: key,
+                error: `Validation Error`,
+              }
+          ));
         }
 
         return initialArray;

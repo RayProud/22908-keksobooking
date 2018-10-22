@@ -6,8 +6,8 @@ const upload = multer({storage: multer.memoryStorage()});
 
 const mockData = require(`../../../../mocks/test-data.json`);
 const NotFoundError = require(`../errors/not-found-error`);
-const {validate, validateUsingAScheme} = require(`../validate`);
-const {offerScheme} = require(`../../../config`);
+const {validate, validateUsingAScheme} = require(`../validation/validate`);
+const offerScheme = require(`../validation/schemes/offer`);
 
 const jsonParser = express.json();
 
