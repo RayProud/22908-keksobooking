@@ -1,19 +1,19 @@
 module.exports = {
   title: {
-    fitsType: `string`,
+    testType: `string`,
     isRequired: true,
-    length: {
+    testLength: {
       min: 30,
       max: 140,
     }
   },
   type: {
-    fitsType: `string`,
+    testType: `string`,
     isRequired: true,
     isOneOfValues: [`flat`, `palace`, `house`, `bungalo`],
   },
   price: {
-    fitsType: `number`,
+    testType: `number`,
     isRequired: true,
     isInRange: {
       min: 1,
@@ -21,26 +21,26 @@ module.exports = {
     }
   },
   address: {
-    fitsType: `string`,
+    testType: `string`,
     isRequired: true,
-    length: {
+    testLength: {
       min: 0,
       max: 100,
     },
-    fitsMask: /^\d+,\s*\d+$/gi
+    testMask: /^\d+,\s*\d+$/gi
   },
   checkin: {
-    fitsType: `string`,
+    testType: `string`,
     isRequired: true,
-    fitsMask: /^\d{2}:\d{2}$/gi
+    testMask: /^\d{2}:\d{2}$/gi
   },
   checkout: {
-    fitsType: `string`,
+    testType: `string`,
     isRequired: true,
-    fitsMask: /^\d{2}:\d{2}$/gi
+    testMask: /^\d{2}:\d{2}$/gi
   },
   rooms: {
-    fitsType: `number`,
+    testType: `number`,
     isRequired: true,
     isInRange: {
       min: 0,
@@ -61,7 +61,7 @@ module.exports = {
     isRequired: false,
   },
   name: {
-    fitsType: `string`,
+    testType: `string`,
     isRequired: false,
   },
 };

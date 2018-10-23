@@ -30,7 +30,13 @@ module.exports = {
 
     return null;
   },
-  fitsType(value, type) {
+  testType(value, type) {
+    // in case of multipart/form-data everything is a string
+    // so we should check if it's numeric and should be numeric
+    if (type === `number` && isNumeric(value)) {
+      value = +value;
+    }
+
     if (typeof value !== type) {
       return {
         errorMessage: `should be ${type}`,
@@ -48,7 +54,7 @@ module.exports = {
 
     return null;
   },
-  length(value, {min, max}) {
+  testLength(value, {min, max}) {
     if (value.length < min) {
       return {
         errorMessage: `should be more than ${min}`,
@@ -94,8 +100,8 @@ module.exports = {
 
     return null;
   },
-  fitsMask(value, fitsMask) {
-    if (fitsMask.test(value)) {
+  testMask(value, testMask) {
+    if (testMask.test(value)) {
       return {
         errorMessage: `doesn't fit the expected format`,
       };
