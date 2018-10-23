@@ -354,28 +354,33 @@ describe(`POST api/offers`, () => {
   });
 
   describe(`with wrong data`, () => {
-    const invalidOffer = {
-      title: `test title`,
-      type: `studio`,
-      address: `some, some`,
-      checkin: 12,
-      checkout: `tvelve`,
-      rooms: 1200,
-      features: [`fan`, `dishwasher`],
-      avatar: `just string`,
-      preview: 234,
-    };
+    let invalidOffer;
+    let anotherInvalidOffer;
 
-    const anotherInvalidOffer = {
-      title: `Very long title which does not fit because of its innumerous, fascinating and astonishing length we have never seen before in our entire lives`,
-      price: 1000000,
-      address: `0, 0`,
-      checkin: `12:70`,
-      checkout: ``,
-      rooms: -1200,
-      features: [`dishwasher`, `dishwasher`],
-      name: `Boris`
-    };
+    beforeEach(() => {
+      invalidOffer = {
+        title: `test title`,
+        type: `studio`,
+        address: `some, some`,
+        checkin: 12,
+        checkout: `tvelve`,
+        rooms: 1200,
+        features: [`fan`, `dishwasher`],
+        avatar: `just string`,
+        preview: 234,
+      };
+
+      anotherInvalidOffer = {
+        title: `Very long title which does not fit because of its innumerous, fascinating and astonishing length we have never seen before in our entire lives`,
+        price: 1000000,
+        address: `0, 0`,
+        checkin: `12:70`,
+        checkout: ``,
+        rooms: -1200,
+        features: [`dishwasher`, `dishwasher`],
+        name: `Boris`
+      };
+    });
 
     describe(`of JSON`, () => {
       it(`responds with title error in json`, () => {
@@ -496,7 +501,78 @@ describe(`POST api/offers`, () => {
           .send(anotherInvalidOffer)
           .set(`Accept`, `application/json`)
           .expect(`Content-Type`, /json/)
-          .expect(400);
+          .expect(400)
+          .then((response) => {
+            const preview = response.body[0];
+
+            assert.deepEqual(preview.error, `Validation Error`);
+            assert.deepEqual(preview.fieldName, `title`);
+            assert.deepEqual(preview.errorMessage, `should be less than 140`);
+          });
+      });
+
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const preview = response.body[1];
+
+            assert.deepEqual(preview.error, `Validation Error`);
+            assert.deepEqual(preview.fieldName, `price`);
+            assert.deepEqual(preview.errorMessage, `should be less than 100000`);
+          });
+      });
+
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const preview = response.body[2];
+
+            assert.deepEqual(preview.error, `Validation Error`);
+            assert.deepEqual(preview.fieldName, `address`);
+            assert.deepEqual(preview.errorMessage, `doesn't fit the expected format`);
+          });
+      });
+
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const preview = response.body[3];
+
+            assert.deepEqual(preview.error, `Validation Error`);
+            assert.deepEqual(preview.fieldName, `features`);
+            assert.deepEqual(preview.errorMessage, `should be array of unique values`);
+          });
+      });
+
+      it(`responds with Bad Request in json`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const preview = response.body[4];
+
+            assert.deepEqual(preview.error, `Validation Error`);
+            assert.deepEqual(preview.fieldName, `rooms`);
+            assert.deepEqual(preview.errorMessage, `should be more than 0`);
+          });
       });
 
       it(`responds with Bad Request in html`, () => {
@@ -505,6 +581,7 @@ describe(`POST api/offers`, () => {
           .send(invalidOffer)
           .set(`Accept`, `text/html`)
           .expect(`Content-Type`, /text\/html/)
+          .expect(`title should be more than 30, type should be one of flat,palace,house,bungalo, checkin should be string, rooms should be less than 1000, features only wifi,dishwasher,parking,washer,elevator,conditioner are allowed, avatar should be image, preview should be image`)
           .expect(400);
       });
 
@@ -514,6 +591,7 @@ describe(`POST api/offers`, () => {
           .send(anotherInvalidOffer)
           .set(`Accept`, `text/html`)
           .expect(`Content-Type`, /text\/html/)
+          .expect(`title should be less than 140, price should be less than 100000, address doesn\'t fit the expected format, checkin doesn\'t fit the expected format, rooms should be more than 0, features should be array of unique values`)
           .expect(400);
       });
     });

@@ -1,45 +1,52 @@
-const {isNil, isNumeric} = require(`../../../helpers/common`);
+const {isNil, isNumeric, isArrayOfUniqueValues} = require(`../../../helpers/common`);
 
-/* eslint-disable consistent-return */
 module.exports = {
-  isNumeric(value, shouldBeNumeric) {
-    if (shouldBeNumeric && !isNumeric(value)) {
+  isNumeric(value) {
+    if (!isNumeric(value)) {
       return {
         errorMessage: `should be number`,
       };
     }
-  },
-  isArrayOfUniqueValues(value, shouldBeAnArrayOfUniqueValues) {
-    const testSet = new Set(value);
 
-    if (shouldBeAnArrayOfUniqueValues && testSet.size !== value.length) {
+    return null;
+  },
+  isArrayOfUniqueValues(value) {
+    if (!isArrayOfUniqueValues(value)) {
       return {
         errorMessage: `should be array of unique values`,
       };
     }
+
+    return null;
   },
-  isImage(value, shouldBeAnImage) {
+  isImage(value) {
     const {mimetype} = value;
 
-    if (shouldBeAnImage && (!mimetype || !(/image/gi.test(mimetype)))) {
+    if ((!mimetype || !(/image/gi.test(mimetype)))) {
       return {
         errorMessage: `should be image`,
       };
     }
+
+    return null;
   },
-  type(value, type) {
+  fitsType(value, type) {
     if (typeof value !== type) {
       return {
         errorMessage: `should be ${type}`,
       };
     }
+
+    return null;
   },
-  isRequired(value, isRequired) {
-    if (isRequired && isNil(value)) {
+  isRequired(value) {
+    if (isNil(value)) {
       return {
         errorMessage: `is required`,
       };
     }
+
+    return null;
   },
   length(value, {min, max}) {
     if (value.length < min) {
@@ -51,24 +58,30 @@ module.exports = {
         errorMessage: `should be less than ${max}`,
       };
     }
+
+    return null;
   },
-  oneOfValues(value, allowedValues) {
+  isOneOfValues(value, allowedValues) {
     if (allowedValues.indexOf(value) === -1) {
       return {
         errorMessage: `should be one of ${allowedValues}`,
       };
     }
+
+    return null;
   },
-  manyOfValues(values, allowedValues) {
-    for (let i = 0; i < values.length; i++) {
-      if (allowedValues.indexOf(values[i]) === -1) {
-        return {
-          errorMessage: `only ${allowedValues} are allowed`,
-        };
-      }
+  areManyOfValues(values, allowedValues) {
+    const isThereValueOutOfAllowed = values.some((i) => allowedValues.indexOf(i) === -1);
+
+    if (isThereValueOutOfAllowed) {
+      return {
+        errorMessage: `only ${allowedValues} are allowed`,
+      };
     }
+
+    return null;
   },
-  range(value, {min, max}) {
+  isInRange(value, {min, max}) {
     if (value < min) {
       return {
         errorMessage: `should be more than ${min}`,
@@ -78,13 +91,16 @@ module.exports = {
         errorMessage: `should be less than ${max}`,
       };
     }
+
+    return null;
   },
-  mask(value, mask) {
-    if (mask.test(value)) {
+  fitsMask(value, fitsMask) {
+    if (fitsMask.test(value)) {
       return {
         errorMessage: `doesn't fit the expected format`,
       };
     }
+
+    return null;
   }
 };
-/* eslint-enable consistent-return */

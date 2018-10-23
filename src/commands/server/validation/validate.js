@@ -1,7 +1,7 @@
 const BadRequest = require(`../errors/bad-request-error`);
 const validateRules = require(`./rules`);
 
-function validateUsingAScheme(objToValidate, scheme) {
+function validate(objToValidate, scheme) {
   const errors = Object.keys(objToValidate).reduce((prev, key) => {
     let innerErrors = [];
     const value = objToValidate[key];
@@ -35,14 +35,4 @@ function validateUsingAScheme(objToValidate, scheme) {
   }
 }
 
-function makeObjectToValidate(source) {
-  return Object.keys(source).reduce((prev, cur) => {
-    prev[cur] = source[cur];
-    return prev;
-  }, {});
-}
-
-module.exports = {
-  validateUsingAScheme,
-  makeObjectToValidate
-};
+module.exports = validate;

@@ -1,6 +1,6 @@
 module.exports = {
   title: {
-    type: `string`,
+    fitsType: `string`,
     isRequired: true,
     length: {
       min: 30,
@@ -8,41 +8,41 @@ module.exports = {
     }
   },
   type: {
-    type: `string`,
+    fitsType: `string`,
     isRequired: true,
-    oneOfValues: [`flat`, `palace`, `house`, `bungalo`],
+    isOneOfValues: [`flat`, `palace`, `house`, `bungalo`],
   },
   price: {
-    type: `number`,
+    fitsType: `number`,
     isRequired: true,
-    range: {
+    isInRange: {
       min: 1,
       max: 100000,
     }
   },
   address: {
-    type: `string`,
+    fitsType: `string`,
     isRequired: true,
     length: {
       min: 0,
       max: 100,
     },
-    mask: /^\d+,\s*\d+$/gi
+    fitsMask: /^\d+,\s*\d+$/gi
   },
   checkin: {
-    type: `string`,
+    fitsType: `string`,
     isRequired: true,
-    mask: /^\d{2}:\d{2}$/gi
+    fitsMask: /^\d{2}:\d{2}$/gi
   },
   checkout: {
-    type: `string`,
+    fitsType: `string`,
     isRequired: true,
-    mask: /^\d{2}:\d{2}$/gi
+    fitsMask: /^\d{2}:\d{2}$/gi
   },
   rooms: {
-    type: `number`,
+    fitsType: `number`,
     isRequired: true,
-    range: {
+    isInRange: {
       min: 0,
       max: 1000,
     }
@@ -50,7 +50,7 @@ module.exports = {
   features: {
     isArrayOfUniqueValues: true,
     isRequired: false,
-    manyOfValues: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
+    areManyOfValues: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
   },
   avatar: {
     isImage: true,
@@ -61,7 +61,7 @@ module.exports = {
     isRequired: false,
   },
   name: {
-    type: `string`,
+    fitsType: `string`,
     isRequired: false,
   },
 };
