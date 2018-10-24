@@ -15,7 +15,7 @@ function validate(objToValidate, scheme) {
 
         if (maybeError) {
           initialArray.push({
-            ...maybeError,
+            errorMessage: maybeError,
             fieldName: key,
             error: `Validation Error`,
           });

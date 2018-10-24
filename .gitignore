@@ -17,3 +17,6 @@ build/
 
 # Локальные файлы конфигураций
 .env
+
+# mongodb data
+.data
