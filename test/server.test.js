@@ -934,4 +934,72 @@ describe(`POST api/offers/randomUrl`, () => {
       });
   });
 });
+
+describe.skip(`GET api/offers/:data/avatar`, () => {
+  const realOfferDateWithAvatar = 1538317798;
+  const realOfferDateWithoutAvatar = 1538317999;
+  const notExistingOfferDate = 1511110629;
+
+  describe(`with a valid date which has an avatar`, () => {
+    it(`responds with an image`, async () => {
+      return request(app)
+        .get(`/api/offers/${realOfferDateWithAvatar}/avatar`)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /image/)
+        .expect(200);
+    });
+  });
+
+  describe(`with a valid date which has no avatar`, () => {
+    it(`responds with Not Found in json`, async () => {
+      return request(app)
+        .get(`/api/offers/${realOfferDateWithoutAvatar}/avatar`)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(404)
+        .then((response) => {
+          const [firstError] = response.body;
+          const {error, errorMessage} = firstError;
+
+          assert.deepEqual(error, `Not Found`);
+          assert.deepEqual(errorMessage, `offer with date equals to ${realOfferDateWithoutAvatar} has no avatar`);
+        });
+    });
+
+    it(`responds with Not Found in html`, async () => {
+      return request(app)
+        .get(`/api/offers/${realOfferDateWithoutAvatar}/avatar`)
+        .set(`Accept`, `text/html`)
+        .expect(`Content-Type`, /text\/html/)
+        .expect(`Not Found offer with date equals to ${realOfferDateWithoutAvatar} has no avatar`)
+        .expect(404);
+    });
+  });
+
+  describe(`with an invalid date`, () => {
+    it(`responds with Bad Request in json`, async () => {
+      return request(app)
+        .get(`/api/offers/${notExistingOfferDate}/avatar`)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(400)
+        .then((response) => {
+          const [firstError] = response.body;
+          const {error, errorMessage} = firstError;
+
+          assert.deepEqual(error, `Bad Request`);
+          assert.deepEqual(errorMessage, `there is no offer with date equals to ${notExistingOfferDate}`);
+        });
+    });
+
+    it(`responds with Bad Request in html`, async () => {
+      return request(app)
+        .get(`/api/offers/${notExistingOfferDate}/avatar`)
+        .set(`Accept`, `text/html`)
+        .expect(`Content-Type`, /text\/html/)
+        .expect(`Bad Request there is no offer with date equals to ${notExistingOfferDate}`)
+        .expect(400);
+    });
+  });
+});
 /* eslint-enable max-nested-callbacks */
