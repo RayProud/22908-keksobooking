@@ -6,7 +6,8 @@ const upload = multer({storage: multer.memoryStorage()});
 
 const mockData = require(`../../../../mocks/test-data.json`);
 const NotFoundError = require(`../errors/not-found-error`);
-const validate = require(`../validate`);
+const validate = require(`../validation/validate`);
+const {postOfferScheme, getOffersScheme, getOfferScheme} = require(`../validation/schemes`);
 
 const jsonParser = express.json();
 
@@ -16,7 +17,7 @@ const DEFAULT_LIMIT_AMOUNT = 20;
 offersRouter.get(`/`, (req, res) => {
   const {limit, skip} = req.query;
 
-  validate([{limit}, {skip}], `numeric`);
+  validate(req.query, getOffersScheme);
 
   const from = +skip || DEFAULT_SKIP_AMOUNT;
   const till = +limit || DEFAULT_LIMIT_AMOUNT;
@@ -32,7 +33,7 @@ offersRouter.get(`/`, (req, res) => {
 offersRouter.get(`/:date`, (req, res) => {
   const {date} = req.params;
 
-  validate([{date}], `numeric`);
+  validate(req.params, getOfferScheme);
 
   const desiredOffer = mockData.find((item) => item.date === +date);
 
@@ -47,8 +48,14 @@ offersRouter.post(`/`, jsonParser, upload.single(`avatar`), (req, res) => {
   const {body, file} = req;
 
   if (file) {
-    body.avatar = {name: file.originalname};
+    const {originalname, mimetype} = file;
+    body.avatar = {
+      name: originalname,
+      mimetype
+    };
   }
+
+  validate(body, postOfferScheme);
 
   res.send(body);
 });

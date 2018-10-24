@@ -72,6 +72,12 @@ function isNil(n) {
   return n == null; /* eslint-disable-line eqeqeq */
 }
 
+function isArrayOfUniqueValues(value) {
+  const testSet = new Set(value);
+
+  return testSet.size === value.length;
+}
+
 module.exports = {
   shuffle,
   getRandomNumberInRange,
@@ -81,4 +87,5 @@ module.exports = {
   isNumeric,
   exists,
   isNil,
+  isArrayOfUniqueValues,
 };
