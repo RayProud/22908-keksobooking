@@ -1,7 +1,7 @@
 const request = require(`supertest`);
 const assert = require(`assert`);
 
-const app = require(`../src/commands/server`).execute();
+const app = require(`../src/server`).execute();
 
 function assertBodyAreNotNil(body) {
   const responseKeys = Object.keys(body);

@@ -3,9 +3,9 @@ const {isNumeric} = require(`../helpers/common`);
 const {normalize} = require(`path`);
 const express = require(`express`);
 const app = express();
-const offersRouter = require(`./server/routes/offers-router`);
-const {generateHtmlError, generateJSONError} = require(`./server/errors-formatter`);
-const NotImplementedError = require(`./server/errors/not-implemented-error`);
+const offersRouter = require(`./routes/offers-router`);
+const {generateHtmlError, generateJSONError} = require(`./errors-formatter`);
+const NotImplementedError = require(`./errors/not-implemented-error`);
 
 app.use(express.static(normalize(`${__dirname}/../../static`)));
 app.disable(`x-powered-by`);

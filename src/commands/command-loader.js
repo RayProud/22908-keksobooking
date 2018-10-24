@@ -3,5 +3,5 @@ module.exports = {
   license: require(`./license`),
   version: require(`./version`),
   author: require(`./author`),
-  server: require(`./server`),
+  server: require(`../server`),
 };

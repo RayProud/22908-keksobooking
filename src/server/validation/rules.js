@@ -1,4 +1,4 @@
-const {isNil, isNumeric, isArrayOfUniqueValues} = require(`../../../helpers/common`);
+const {isNil, isNumeric, isArrayOfUniqueValues} = require(`../../helpers/common`);
 
 module.exports = {
   isNumeric(value) {

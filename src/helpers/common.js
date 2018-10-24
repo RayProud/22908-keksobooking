@@ -78,6 +78,8 @@ function isArrayOfUniqueValues(value) {
   return testSet.size === value.length;
 }
 
+const asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+
 module.exports = {
   shuffle,
   getRandomNumberInRange,
@@ -88,4 +90,5 @@ module.exports = {
   exists,
   isNil,
   isArrayOfUniqueValues,
+  asyncMiddleware,
 };
