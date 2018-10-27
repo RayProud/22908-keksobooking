@@ -1,7 +1,13 @@
 const request = require(`supertest`);
 const assert = require(`assert`);
+const express = require(`express`);
 
-const app = require(`../src/server`).execute();
+const offersStoreMock = require(`./mocks/stores/offers-store-mock`);
+const imagesStoreMock = require(`./mocks/stores/images-store-mock`);
+const offersRouter = require(`../src/server/routes/offers`)(offersStoreMock, imagesStoreMock);
+
+const app = express();
+app.use(`/api/offers`, offersRouter);
 
 function assertBodyAreNotNil(body) {
   const responseKeys = Object.keys(body);
@@ -10,24 +16,6 @@ function assertBodyAreNotNil(body) {
 }
 
 /* eslint-disable max-nested-callbacks */
-describe(`GET /randomMethod`, () => {
-  it(`responds with 501 in application/json`, () => {
-    return request(app)
-      .get(`/randomUrl`)
-      .set(`Accept`, `application/json`)
-      .expect(`Content-Type`, /json/)
-      .expect(501);
-  });
-
-  it(`responds with 501 in text/html`, () => {
-    return request(app)
-      .get(`/randomUrl`)
-      .set(`Accept`, `text/html`)
-      .expect(`Content-Type`, /text\/html/)
-      .expect(501);
-  });
-});
-
 describe(`GET /api/offers`, () => {
   it(`responds with an object of data, skip, limit and total`, () => {
     return request(app)
@@ -261,99 +249,373 @@ describe(`GET /api/offers/:date`, () => {
 });
 
 describe(`POST api/offers`, () => {
-  it(`with data in json responds with the same object in application/json`, () => {
-    const mockOffer = {
-      author: {
-        avatar: `https://robohash.org/skfejne`
-      },
-      offer: {
-        title: `Некрасивый негостеприимный домик`,
-        address: `310, 450`,
-        price: 561653,
-        type: `house`,
-        rooms: 4,
-        guests: 8,
-        checkin: `12:00`,
-        checkout: `13:00`,
-        features: [
-          `parking`,
-          `wifi`,
-          `dishwasher`
-        ],
-        description: ``,
-        photos: [
-          `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
-          `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
-          `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
-        ]
-      },
-      location: {
-        x: 310,
-        y: 450
-      },
-      date: 1538484899
-    };
+  describe(`with valid data`, () => {
+    describe(`of JSON`, () => {
+      it(`with name field responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          name: `Roman`,
+          title: `Amazingly awful and not hospitable (just joking) house`,
+          address: `310, 450`,
+          price: 56653,
+          type: `house`,
+          rooms: 4,
+          guests: 8,
+          checkin: `12:00`,
+          checkout: `13:00`,
+          features: [
+            `parking`,
+            `wifi`,
+            `dishwasher`
+          ],
+          description: ``,
+        };
 
-    return request(app)
-      .post(`/api/offers`)
-      .send(mockOffer)
-      .set(`Accept`, `application/json`)
-      .expect(`Content-Type`, /json/)
-      .expect(200)
-      .then((response) => {
-        const {body} = response;
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 310,
+                y: 450
+              }
+            }
+        );
 
-        assertBodyAreNotNil(body);
-        assert.deepEqual(body, mockOffer);
+        return request(app)
+        .post(`/api/offers`)
+        .send(mockRequestOffer)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
       });
+
+      it(`without name field responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          title: `Random name just to test the api`,
+          address: `500,100`,
+          price: 100,
+          type: `palace`,
+          rooms: 1,
+          guests: 2,
+          checkin: `11:00`,
+          checkout: `12:00`,
+          features: [
+            `parking`,
+            `wifi`
+          ],
+          description: `Random description`,
+        };
+
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 500,
+                y: 100
+              }
+            }
+        );
+
+        return request(app)
+        .post(`/api/offers`)
+        .send(mockRequestOffer)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
+      });
+
+      it(`with the only feature value responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          title: `Random name just to test the api`,
+          address: `500,100`,
+          price: 100,
+          type: `house`,
+          rooms: 1000,
+          guests: 12,
+          checkin: `11:00`,
+          checkout: `12:00`,
+          features: [`parking`],
+        };
+
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 500,
+                y: 100
+              }
+            }
+        );
+
+        return request(app)
+        .post(`/api/offers`)
+        .send(mockRequestOffer)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
+      });
+
+      it(`without a feature field responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          title: `Random name just to test the api`,
+          address: `500,100`,
+          price: 100,
+          type: `house`,
+          rooms: 1000,
+          guests: 12,
+          checkin: `11:00`,
+          checkout: `12:00`,
+        };
+
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 500,
+                y: 100
+              }
+            }
+        );
+
+        return request(app)
+        .post(`/api/offers`)
+        .send(mockRequestOffer)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
+      });
+    });
+
+    describe(`of multipart/form-data`, () => {
+      it(`with name field responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          name: `Roman`,
+          title: `Amazingly awful and not hospitable (just joking) house`,
+          address: `310, 450`,
+          price: 56653,
+          type: `house`,
+          rooms: 4,
+          guests: 8,
+          checkin: `12:00`,
+          checkout: `13:00`,
+          features: [
+            `parking`,
+            `wifi`,
+            `dishwasher`
+          ],
+          description: ``,
+        };
+
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 310,
+                y: 450
+              }
+            }
+        );
+
+        return request(app)
+        .post(`/api/offers`)
+        .set(`Content-Type`, `multipart/form-data`)
+        .field(`name`, mockRequestOffer.name)
+        .field(`title`, mockRequestOffer.title)
+        .field(`type`, mockRequestOffer.type)
+        .field(`price`, mockRequestOffer.price)
+        .field(`address`, mockRequestOffer.address)
+        .field(`checkin`, mockRequestOffer.checkin)
+        .field(`checkout`, mockRequestOffer.checkout)
+        .field(`rooms`, mockRequestOffer.rooms)
+        .field(`guests`, mockRequestOffer.guests)
+        .field(`features`, mockRequestOffer.features)
+        .field(`description`, mockRequestOffer.description)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
+      });
+
+      it(`without name field responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          title: `Random name just to test the api`,
+          address: `500,100`,
+          price: 100,
+          type: `palace`,
+          rooms: 1,
+          guests: 2,
+          checkin: `11:00`,
+          checkout: `12:00`,
+          features: [
+            `parking`,
+            `wifi`
+          ],
+          description: `Random description`,
+        };
+
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 500,
+                y: 100
+              }
+            }
+        );
+
+        return request(app)
+        .post(`/api/offers`)
+        .set(`Content-Type`, `multipart/form-data`)
+        .field(`title`, mockRequestOffer.title)
+        .field(`type`, mockRequestOffer.type)
+        .field(`price`, mockRequestOffer.price)
+        .field(`address`, mockRequestOffer.address)
+        .field(`checkin`, mockRequestOffer.checkin)
+        .field(`checkout`, mockRequestOffer.checkout)
+        .field(`rooms`, mockRequestOffer.rooms)
+        .field(`guests`, mockRequestOffer.guests)
+        .field(`features`, mockRequestOffer.features)
+        .field(`description`, mockRequestOffer.description)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
+      });
+
+      it(`with the only feature value responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          title: `Random name just to test the api`,
+          address: `500,100`,
+          price: 100,
+          type: `house`,
+          rooms: 1000,
+          guests: 12,
+          checkin: `11:00`,
+          checkout: `12:00`,
+          features: [`parking`],
+        };
+
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 500,
+                y: 100
+              }
+            }
+        );
+
+        return request(app)
+        .post(`/api/offers`)
+        .set(`Content-Type`, `multipart/form-data`)
+        .field(`title`, mockRequestOffer.title)
+        .field(`type`, mockRequestOffer.type)
+        .field(`price`, mockRequestOffer.price)
+        .field(`address`, mockRequestOffer.address)
+        .field(`checkin`, mockRequestOffer.checkin)
+        .field(`checkout`, mockRequestOffer.checkout)
+        .field(`rooms`, mockRequestOffer.rooms)
+        .field(`guests`, mockRequestOffer.guests)
+        .field(`features`, mockRequestOffer.features)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
+      });
+
+      it(`without a feature field responds with a valid offer including a location field`, () => {
+        const mockRequestOffer = {
+          title: `Random name just to test the api`,
+          address: `500,100`,
+          price: 100,
+          type: `house`,
+          rooms: 1000,
+          guests: 12,
+          checkin: `11:00`,
+          checkout: `12:00`,
+        };
+
+        const mockResponseOffer = Object.assign(
+            {},
+            mockRequestOffer,
+            {
+              location: {
+                x: 500,
+                y: 100
+              }
+            }
+        );
+
+        return request(app)
+        .post(`/api/offers`)
+        .set(`Content-Type`, `multipart/form-data`)
+        .field(`title`, mockRequestOffer.title)
+        .field(`type`, mockRequestOffer.type)
+        .field(`price`, mockRequestOffer.price)
+        .field(`address`, mockRequestOffer.address)
+        .field(`checkin`, mockRequestOffer.checkin)
+        .field(`checkout`, mockRequestOffer.checkout)
+        .field(`rooms`, mockRequestOffer.rooms)
+        .field(`guests`, mockRequestOffer.guests)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(200)
+        .then((response) => {
+          const {body} = response;
+
+          assertBodyAreNotNil(body);
+          assert.deepEqual(body, mockResponseOffer);
+        });
+      });
+    });
   });
 
-  it(`with text data in multipart/form-data responds with the same object in application/json`, () => {
-    const testNameField = `A beautiful name`;
-    const desiredResponse = {
-      name: testNameField
-    };
-
-    return request(app)
-      .post(`/api/offers`)
-      .field(`name`, testNameField)
-      .set(`Content-Type`, `multipart/form-data`)
-      .set(`Accept`, `application/json`)
-      .expect(`Content-Type`, /json/)
-      .expect(200)
-      .then((response) => {
-        const {body} = response;
-
-        assertBodyAreNotNil(body);
-        assert.deepEqual(body, desiredResponse);
-      });
-  });
-
-  it(`with img data in multipart/form-data responds with the same object in application/json`, () => {
-    const testImgName = `keks.png`;
-    const desiredResponse = {
-      avatar: {
-        name: testImgName,
-        mimetype: `image/png`
-      }
-    };
-
-    return request(app)
-      .post(`/api/offers`)
-      .attach(`avatar`, `${__dirname}/../mocks/${testImgName}`)
-      .set(`Content-Type`, `multipart/form-data`)
-      .set(`Accept`, `application/json`)
-      .expect(`Content-Type`, /json/)
-      .expect(200)
-      .then((response) => {
-        const {body} = response;
-
-        assertBodyAreNotNil(body);
-        assert.deepEqual(body, desiredResponse);
-      });
-  });
-
-  describe(`with wrong data`, () => {
+  describe(`with invalid data`, () => {
     let invalidOffer;
     let anotherInvalidOffer;
 
@@ -415,6 +677,54 @@ describe(`POST api/offers`, () => {
           });
       });
 
+      it(`responds with error in json — price is required`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const priceError = response.body[2];
+
+            assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `price`);
+            assert.deepEqual(priceError.errorMessage, `is required`);
+          });
+      });
+
+      it(`responds with error in json — price should be number`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const priceError = response.body[3];
+
+            assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `price`);
+            assert.deepEqual(priceError.errorMessage, `should be number`);
+          });
+      });
+
+      it(`responds with error in json — address should be in format 'xxx, xxx', where xxx are numbers`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const addressError = response.body[4];
+
+            assert.deepEqual(addressError.error, `Validation Error`);
+            assert.deepEqual(addressError.fieldName, `address`);
+            assert.deepEqual(addressError.errorMessage, `doesn't fit the expected format`);
+          });
+      });
+
       it(`responds with error in json — checkin should be HH:mm`, () => {
         return request(app)
           .post(`/api/offers`)
@@ -423,11 +733,43 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const checkinTypeError = response.body[2];
+            const checkinTypeError = response.body[5];
 
             assert.deepEqual(checkinTypeError.error, `Validation Error`);
             assert.deepEqual(checkinTypeError.fieldName, `checkin`);
             assert.deepEqual(checkinTypeError.errorMessage, `should be string`);
+          });
+      });
+
+      it(`responds with error in json — checkin should be HH:mm`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const checkinTypeError = response.body[6];
+
+            assert.deepEqual(checkinTypeError.error, `Validation Error`);
+            assert.deepEqual(checkinTypeError.fieldName, `checkin`);
+            assert.deepEqual(checkinTypeError.errorMessage, `doesn't fit the expected format`);
+          });
+      });
+
+      it(`responds with error in json — checkout should be HH:mm`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(invalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const checkoutTypeError = response.body[7];
+
+            assert.deepEqual(checkoutTypeError.error, `Validation Error`);
+            assert.deepEqual(checkoutTypeError.fieldName, `checkout`);
+            assert.deepEqual(checkoutTypeError.errorMessage, `doesn't fit the expected format`);
           });
       });
 
@@ -439,7 +781,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const roomsError = response.body[3];
+            const roomsError = response.body[8];
 
             assert.deepEqual(roomsError.error, `Validation Error`);
             assert.deepEqual(roomsError.fieldName, `rooms`);
@@ -455,7 +797,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const featuresError = response.body[4];
+            const featuresError = response.body[9];
 
             assert.deepEqual(featuresError.error, `Validation Error`);
             assert.deepEqual(featuresError.fieldName, `features`);
@@ -471,7 +813,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const avatarError = response.body[5];
+            const avatarError = response.body[10];
 
             assert.deepEqual(avatarError.error, `Validation Error`);
             assert.deepEqual(avatarError.fieldName, `avatar`);
@@ -487,7 +829,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const previewError = response.body[6];
+            const previewError = response.body[11];
 
             assert.deepEqual(previewError.error, `Validation Error`);
             assert.deepEqual(previewError.fieldName, `preview`);
@@ -511,7 +853,7 @@ describe(`POST api/offers`, () => {
           });
       });
 
-      it(`responds with error in json — price should be in range between 1 and 100000`, () => {
+      it(`responds with error in json — type is required`, () => {
         return request(app)
           .post(`/api/offers`)
           .send(anotherInvalidOffer)
@@ -522,12 +864,62 @@ describe(`POST api/offers`, () => {
             const priceError = response.body[1];
 
             assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `type`);
+            assert.deepEqual(priceError.errorMessage, `is required`);
+          });
+      });
+
+      it(`responds with error in json — type should be string`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const priceError = response.body[2];
+
+            assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `type`);
+            assert.deepEqual(priceError.errorMessage, `should be string`);
+          });
+      });
+
+
+      it(`responds with error in json — `, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const priceError = response.body[3];
+
+            assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `type`);
+            assert.deepEqual(priceError.errorMessage, `should be one of flat,palace,house,bungalo`);
+          });
+      });
+
+
+      it(`responds with error in json — price should be in range between 1 and 100000`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const priceError = response.body[4];
+
+            assert.deepEqual(priceError.error, `Validation Error`);
             assert.deepEqual(priceError.fieldName, `price`);
             assert.deepEqual(priceError.errorMessage, `should be less than 100000`);
           });
       });
 
-      it(`responds with error in json — address should be in format 'xxx, xxx', where xxx are numbers`, () => {
+      it(`responds with error in json — price should be in range between 1 and 100000`, () => {
         return request(app)
           .post(`/api/offers`)
           .send(anotherInvalidOffer)
@@ -535,15 +927,15 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const addressError = response.body[2];
+            const priceError = response.body[4];
 
-            assert.deepEqual(addressError.error, `Validation Error`);
-            assert.deepEqual(addressError.fieldName, `address`);
-            assert.deepEqual(addressError.errorMessage, `doesn't fit the expected format`);
+            assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `price`);
+            assert.deepEqual(priceError.errorMessage, `should be less than 100000`);
           });
       });
 
-      it(`responds with error in json — features should be array of unique allowed values`, () => {
+      it(`responds with error in json — checkout should fit HH:mm format`, () => {
         return request(app)
           .post(`/api/offers`)
           .send(anotherInvalidOffer)
@@ -551,11 +943,11 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const featuresError = response.body[3];
+            const checkoutError = response.body[5];
 
-            assert.deepEqual(featuresError.error, `Validation Error`);
-            assert.deepEqual(featuresError.fieldName, `features`);
-            assert.deepEqual(featuresError.errorMessage, `should be array of unique values`);
+            assert.deepEqual(checkoutError.error, `Validation Error`);
+            assert.deepEqual(checkoutError.fieldName, `checkout`);
+            assert.deepEqual(checkoutError.errorMessage, `doesn't fit the expected format`);
           });
       });
 
@@ -567,11 +959,27 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const roomsError = response.body[4];
+            const roomsError = response.body[6];
 
             assert.deepEqual(roomsError.error, `Validation Error`);
             assert.deepEqual(roomsError.fieldName, `rooms`);
             assert.deepEqual(roomsError.errorMessage, `should be more than 0`);
+          });
+      });
+
+      it(`responds with error in json — features should be array of unique allowed values`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .send(anotherInvalidOffer)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const featuresError = response.body[7];
+
+            assert.deepEqual(featuresError.error, `Validation Error`);
+            assert.deepEqual(featuresError.fieldName, `features`);
+            assert.deepEqual(featuresError.errorMessage, `should be array of unique values`);
           });
       });
 
@@ -581,7 +989,7 @@ describe(`POST api/offers`, () => {
           .send(invalidOffer)
           .set(`Accept`, `text/html`)
           .expect(`Content-Type`, /text\/html/)
-          .expect(`title should be more than 30, type should be one of flat,palace,house,bungalo, checkin should be string, rooms should be less than 1000, features only wifi,dishwasher,parking,washer,elevator,conditioner are allowed, avatar should be image, preview should be image`)
+          .expect(`title should be more than 30, type should be one of flat,palace,house,bungalo, price is required, price should be number, address doesn\'t fit the expected format, checkin should be string, checkin doesn\'t fit the expected format, checkout doesn\'t fit the expected format, rooms should be less than 1000, features only wifi,dishwasher,parking,washer,elevator,conditioner are allowed, avatar should be image, preview should be image`)
           .expect(400);
       });
 
@@ -591,7 +999,7 @@ describe(`POST api/offers`, () => {
           .send(anotherInvalidOffer)
           .set(`Accept`, `text/html`)
           .expect(`Content-Type`, /text\/html/)
-          .expect(`title should be less than 140, price should be less than 100000, address doesn\'t fit the expected format, checkin doesn\'t fit the expected format, rooms should be more than 0, features should be array of unique values`)
+          .expect(`title should be less than 140, type is required, type should be string, type should be one of flat,palace,house,bungalo, price should be less than 100000, checkout doesn\'t fit the expected format, rooms should be more than 0, features should be array of unique values`)
           .expect(400);
       });
     });
@@ -600,7 +1008,7 @@ describe(`POST api/offers`, () => {
       it(`responds with error in json — title length should be in range between 30 and 140`, () => {
         return request(app)
           .post(`/api/offers`)
-                    .set(`Content-Type`, `multipart/form-data`)
+          .set(`Content-Type`, `multipart/form-data`)
           .field(`title`, invalidOffer.title)
           .field(`type`, invalidOffer.type)
           .field(`address`, invalidOffer.address)
@@ -647,6 +1055,131 @@ describe(`POST api/offers`, () => {
           });
       });
 
+      it(`responds with error in json — price is required`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, invalidOffer.title)
+          .field(`type`, invalidOffer.type)
+          .field(`address`, invalidOffer.address)
+          .field(`checkin`, invalidOffer.checkin)
+          .field(`checkout`, invalidOffer.checkout)
+          .field(`rooms`, invalidOffer.rooms)
+          .field(`features`, invalidOffer.features)
+          .field(`avatar`, invalidOffer.avatar)
+          .field(`preview`, invalidOffer.preview)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const priceError = response.body[2];
+
+            assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `price`);
+            assert.deepEqual(priceError.errorMessage, `is required`);
+          });
+      });
+
+      it(`responds with error in json — price should be number`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, invalidOffer.title)
+          .field(`type`, invalidOffer.type)
+          .field(`address`, invalidOffer.address)
+          .field(`checkin`, invalidOffer.checkin)
+          .field(`checkout`, invalidOffer.checkout)
+          .field(`rooms`, invalidOffer.rooms)
+          .field(`features`, invalidOffer.features)
+          .field(`avatar`, invalidOffer.avatar)
+          .field(`preview`, invalidOffer.preview)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const priceError = response.body[3];
+
+            assert.deepEqual(priceError.error, `Validation Error`);
+            assert.deepEqual(priceError.fieldName, `price`);
+            assert.deepEqual(priceError.errorMessage, `should be number`);
+          });
+      });
+
+      it(`responds with error in json — address should be in format 'xxx, xxx', where xxx are numbers`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, invalidOffer.title)
+          .field(`type`, invalidOffer.type)
+          .field(`address`, invalidOffer.address)
+          .field(`checkin`, invalidOffer.checkin)
+          .field(`checkout`, invalidOffer.checkout)
+          .field(`rooms`, invalidOffer.rooms)
+          .field(`features`, invalidOffer.features)
+          .field(`avatar`, invalidOffer.avatar)
+          .field(`preview`, invalidOffer.preview)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const addressError = response.body[4];
+
+            assert.deepEqual(addressError.error, `Validation Error`);
+            assert.deepEqual(addressError.fieldName, `address`);
+            assert.deepEqual(addressError.errorMessage, `doesn't fit the expected format`);
+          });
+      });
+
+      it(`responds with error in json — checkin should be HH:mm`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, invalidOffer.title)
+          .field(`type`, invalidOffer.type)
+          .field(`address`, invalidOffer.address)
+          .field(`checkin`, invalidOffer.checkin)
+          .field(`checkout`, invalidOffer.checkout)
+          .field(`rooms`, invalidOffer.rooms)
+          .field(`features`, invalidOffer.features)
+          .field(`avatar`, invalidOffer.avatar)
+          .field(`preview`, invalidOffer.preview)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const roomsError = response.body[5];
+
+            assert.deepEqual(roomsError.error, `Validation Error`);
+            assert.deepEqual(roomsError.fieldName, `checkin`);
+            assert.deepEqual(roomsError.errorMessage, `doesn't fit the expected format`);
+          });
+      });
+
+      it(`responds with error in json — checkout should be HH:mm`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, invalidOffer.title)
+          .field(`type`, invalidOffer.type)
+          .field(`address`, invalidOffer.address)
+          .field(`checkin`, invalidOffer.checkin)
+          .field(`checkout`, invalidOffer.checkout)
+          .field(`rooms`, invalidOffer.rooms)
+          .field(`features`, invalidOffer.features)
+          .field(`avatar`, invalidOffer.avatar)
+          .field(`preview`, invalidOffer.preview)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const featuresError = response.body[6];
+
+            assert.deepEqual(featuresError.error, `Validation Error`);
+            assert.deepEqual(featuresError.fieldName, `checkout`);
+            assert.deepEqual(featuresError.errorMessage, `doesn't fit the expected format`);
+          });
+      });
+
       it(`responds with error in json — checkin rooms should be in range between 0 and 1000`, () => {
         return request(app)
           .post(`/api/offers`)
@@ -664,7 +1197,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const roomsError = response.body[2];
+            const roomsError = response.body[7];
 
             assert.deepEqual(roomsError.error, `Validation Error`);
             assert.deepEqual(roomsError.fieldName, `rooms`);
@@ -689,7 +1222,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const featuresError = response.body[3];
+            const featuresError = response.body[8];
 
             assert.deepEqual(featuresError.error, `Validation Error`);
             assert.deepEqual(featuresError.fieldName, `features`);
@@ -714,7 +1247,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const avatarError = response.body[4];
+            const avatarError = response.body[9];
 
             assert.deepEqual(avatarError.error, `Validation Error`);
             assert.deepEqual(avatarError.fieldName, `avatar`);
@@ -739,7 +1272,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const previewError = response.body[5];
+            const previewError = response.body[10];
 
             assert.deepEqual(previewError.error, `Validation Error`);
             assert.deepEqual(previewError.fieldName, `preview`);
@@ -771,6 +1304,78 @@ describe(`POST api/offers`, () => {
           });
       });
 
+      it(`responds with error in json — type is required`, () => {
+        return request(app)
+        .post(`/api/offers`)
+        .set(`Content-Type`, `multipart/form-data`)
+        .field(`title`, anotherInvalidOffer.title)
+        .field(`price`, anotherInvalidOffer.price)
+        .field(`address`, anotherInvalidOffer.address)
+        .field(`checkin`, anotherInvalidOffer.checkin)
+        .field(`checkout`, anotherInvalidOffer.checkout)
+        .field(`rooms`, anotherInvalidOffer.rooms)
+        .field(`features`, anotherInvalidOffer.features)
+        .field(`name`, anotherInvalidOffer.name)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(400)
+        .then((response) => {
+          const typeError = response.body[1];
+
+          assert.deepEqual(typeError.error, `Validation Error`);
+          assert.deepEqual(typeError.fieldName, `type`);
+          assert.deepEqual(typeError.errorMessage, `is required`);
+        });
+      });
+
+      it(`responds with error in json — type should be string`, () => {
+        return request(app)
+        .post(`/api/offers`)
+        .set(`Content-Type`, `multipart/form-data`)
+        .field(`title`, anotherInvalidOffer.title)
+        .field(`price`, anotherInvalidOffer.price)
+        .field(`address`, anotherInvalidOffer.address)
+        .field(`checkin`, anotherInvalidOffer.checkin)
+        .field(`checkout`, anotherInvalidOffer.checkout)
+        .field(`rooms`, anotherInvalidOffer.rooms)
+        .field(`features`, anotherInvalidOffer.features)
+        .field(`name`, anotherInvalidOffer.name)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(400)
+        .then((response) => {
+          const typeError = response.body[2];
+
+          assert.deepEqual(typeError.error, `Validation Error`);
+          assert.deepEqual(typeError.fieldName, `type`);
+          assert.deepEqual(typeError.errorMessage, `should be string`);
+        });
+      });
+
+      it(`responds with error in json — type should be one of flat,palace,house,bungalo`, () => {
+        return request(app)
+        .post(`/api/offers`)
+        .set(`Content-Type`, `multipart/form-data`)
+        .field(`title`, anotherInvalidOffer.title)
+        .field(`price`, anotherInvalidOffer.price)
+        .field(`address`, anotherInvalidOffer.address)
+        .field(`checkin`, anotherInvalidOffer.checkin)
+        .field(`checkout`, anotherInvalidOffer.checkout)
+        .field(`rooms`, anotherInvalidOffer.rooms)
+        .field(`features`, anotherInvalidOffer.features)
+        .field(`name`, anotherInvalidOffer.name)
+        .set(`Accept`, `application/json`)
+        .expect(`Content-Type`, /json/)
+        .expect(400)
+        .then((response) => {
+          const typeError = response.body[3];
+
+          assert.deepEqual(typeError.error, `Validation Error`);
+          assert.deepEqual(typeError.fieldName, `type`);
+          assert.deepEqual(typeError.errorMessage, `should be one of flat,palace,house,bungalo`);
+        });
+      });
+
       it(`responds with error in json — price should be in range between 1 and 100000`, () => {
         return request(app)
           .post(`/api/offers`)
@@ -787,7 +1392,7 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const priceError = response.body[1];
+            const priceError = response.body[4];
 
             assert.deepEqual(priceError.error, `Validation Error`);
             assert.deepEqual(priceError.fieldName, `price`);
@@ -795,7 +1400,7 @@ describe(`POST api/offers`, () => {
           });
       });
 
-      it(`responds with error in json — address should be in format 'xxx, xxx', where xxx are numbers`, () => {
+      it(`responds with error in json — checkout should be HH:mm`, () => {
         return request(app)
           .post(`/api/offers`)
           .set(`Content-Type`, `multipart/form-data`)
@@ -811,35 +1416,11 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const addressError = response.body[2];
+            const checkoutError = response.body[5];
 
-            assert.deepEqual(addressError.error, `Validation Error`);
-            assert.deepEqual(addressError.fieldName, `address`);
-            assert.deepEqual(addressError.errorMessage, `doesn't fit the expected format`);
-          });
-      });
-
-      it(`responds with error in json — features should be array of unique allowed values`, () => {
-        return request(app)
-          .post(`/api/offers`)
-          .set(`Content-Type`, `multipart/form-data`)
-          .field(`title`, anotherInvalidOffer.title)
-          .field(`price`, anotherInvalidOffer.price)
-          .field(`address`, anotherInvalidOffer.address)
-          .field(`checkin`, anotherInvalidOffer.checkin)
-          .field(`checkout`, anotherInvalidOffer.checkout)
-          .field(`rooms`, anotherInvalidOffer.rooms)
-          .field(`features`, anotherInvalidOffer.features)
-          .field(`name`, anotherInvalidOffer.name)
-          .set(`Accept`, `application/json`)
-          .expect(`Content-Type`, /json/)
-          .expect(400)
-          .then((response) => {
-            const featuresError = response.body[3];
-
-            assert.deepEqual(featuresError.error, `Validation Error`);
-            assert.deepEqual(featuresError.fieldName, `features`);
-            assert.deepEqual(featuresError.errorMessage, `should be array of unique values`);
+            assert.deepEqual(checkoutError.error, `Validation Error`);
+            assert.deepEqual(checkoutError.fieldName, `checkout`);
+            assert.deepEqual(checkoutError.errorMessage, `doesn't fit the expected format`);
           });
       });
 
@@ -859,11 +1440,35 @@ describe(`POST api/offers`, () => {
           .expect(`Content-Type`, /json/)
           .expect(400)
           .then((response) => {
-            const roomsError = response.body[4];
+            const roomsError = response.body[6];
 
             assert.deepEqual(roomsError.error, `Validation Error`);
             assert.deepEqual(roomsError.fieldName, `rooms`);
             assert.deepEqual(roomsError.errorMessage, `should be more than 0`);
+          });
+      });
+
+      it(`responds with error in json — features should be array of unique allowed values`, () => {
+        return request(app)
+          .post(`/api/offers`)
+          .set(`Content-Type`, `multipart/form-data`)
+          .field(`title`, anotherInvalidOffer.title)
+          .field(`price`, anotherInvalidOffer.price)
+          .field(`address`, anotherInvalidOffer.address)
+          .field(`checkin`, anotherInvalidOffer.checkin)
+          .field(`checkout`, anotherInvalidOffer.checkout)
+          .field(`rooms`, anotherInvalidOffer.rooms)
+          .field(`features`, anotherInvalidOffer.features)
+          .field(`name`, anotherInvalidOffer.name)
+          .set(`Accept`, `application/json`)
+          .expect(`Content-Type`, /json/)
+          .expect(400)
+          .then((response) => {
+            const featuresError = response.body[7];
+
+            assert.deepEqual(featuresError.error, `Validation Error`);
+            assert.deepEqual(featuresError.fieldName, `features`);
+            assert.deepEqual(featuresError.errorMessage, `should be array of unique values`);
           });
       });
 
@@ -882,7 +1487,7 @@ describe(`POST api/offers`, () => {
           .field(`preview`, invalidOffer.preview)
           .set(`Accept`, `text/html`)
           .expect(`Content-Type`, /text\/html/)
-          .expect(`title should be more than 30, type should be one of flat,palace,house,bungalo, rooms should be less than 1000, features only wifi,dishwasher,parking,washer,elevator,conditioner are allowed, avatar should be image, preview should be image`)
+          .expect(`title should be more than 30, type should be one of flat,palace,house,bungalo, price is required, price should be number, address doesn\'t fit the expected format, checkin doesn\'t fit the expected format, checkout doesn\'t fit the expected format, rooms should be less than 1000, features only wifi,dishwasher,parking,washer,elevator,conditioner are allowed, avatar should be image, preview should be image`)
           .expect(400);
       });
 
@@ -898,49 +1503,23 @@ describe(`POST api/offers`, () => {
           .field(`rooms`, anotherInvalidOffer.rooms)
           .field(`features`, anotherInvalidOffer.features)
           .field(`name`, anotherInvalidOffer.name)
-          .attach(`avatar`, `${__dirname}/../mocks/keks.png`)
+          .attach(`avatar`, `${__dirname}/mocks/fixtures/keks.png`)
           .set(`Accept`, `text/html`)
           .expect(`Content-Type`, /text\/html/)
-          .expect(`title should be less than 140, price should be less than 100000, address doesn\'t fit the expected format, checkin doesn\'t fit the expected format, rooms should be more than 0, features should be array of unique values`)
+          .expect(`title should be less than 140, type is required, type should be string, type should be one of flat,palace,house,bungalo, price should be less than 100000, checkout doesn\'t fit the expected format, rooms should be more than 0, features should be array of unique values`)
           .expect(400);
       });
     });
   });
 });
 
-describe(`POST api/offers/randomUrl`, () => {
-  const notImplementedUrl = `/api/offers/randomUrl`;
-
-  it(`responds with Not Implemented in text/html`, () => {
-    return request(app)
-      .post(notImplementedUrl)
-      .set(`Accept`, `text/html`)
-      .expect(`Content-Type`, /text\/html/)
-      .expect(501)
-      .expect(`${notImplementedUrl} is not implemented yet`);
-  });
-
-  it(`responds with Not Implemented in application/json`, () => {
-    return request(app)
-      .post(notImplementedUrl)
-      .set(`Accept`, `application/json`)
-      .expect(`Content-Type`, /json/)
-      .expect(501)
-      .then((response) => {
-        const [firstError] = response.body;
-
-        assert.deepEqual(firstError.error, `Not Implemented`);
-        assert.deepEqual(firstError.errorMessage, `${notImplementedUrl} is not implemented yet`);
-      });
-  });
-});
-
-describe.skip(`GET api/offers/:data/avatar`, () => {
+describe(`GET api/offers/:data/avatar`, () => {
   const realOfferDateWithAvatar = 1538317798;
-  const realOfferDateWithoutAvatar = 1538317999;
+  const realOfferDateWithoutAvatar = 1538544650;
   const notExistingOfferDate = 1511110629;
 
-  describe(`with a valid date which has an avatar`, () => {
+  // how to test it with no real DB?
+  describe.skip(`with a valid date which has an avatar`, () => {
     it(`responds with an image`, async () => {
       return request(app)
         .get(`/api/offers/${realOfferDateWithAvatar}/avatar`)
@@ -971,7 +1550,7 @@ describe.skip(`GET api/offers/:data/avatar`, () => {
         .get(`/api/offers/${realOfferDateWithoutAvatar}/avatar`)
         .set(`Accept`, `text/html`)
         .expect(`Content-Type`, /text\/html/)
-        .expect(`Not Found offer with date equals to ${realOfferDateWithoutAvatar} has no avatar`)
+        .expect(`offer with date equals to ${realOfferDateWithoutAvatar} has no avatar`)
         .expect(404);
     });
   });
@@ -997,7 +1576,7 @@ describe.skip(`GET api/offers/:data/avatar`, () => {
         .get(`/api/offers/${notExistingOfferDate}/avatar`)
         .set(`Accept`, `text/html`)
         .expect(`Content-Type`, /text\/html/)
-        .expect(`Bad Request there is no offer with date equals to ${notExistingOfferDate}`)
+        .expect(`there is no offer with date equals to ${notExistingOfferDate}`)
         .expect(400);
     });
   });

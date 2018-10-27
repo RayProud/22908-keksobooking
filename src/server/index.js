@@ -1,31 +1,16 @@
 const colors = require(`colors`);
 const {isNumeric} = require(`../helpers/common`);
-const {normalize} = require(`path`);
 const express = require(`express`);
 const app = express();
-const offersRouter = require(`./routes/offers-router`);
-const {generateHtmlError, generateJSONError} = require(`./errors-formatter`);
-const NotImplementedError = require(`./errors/not-implemented-error`);
 
-app.use(express.static(normalize(`${__dirname}/../../static`)));
+const {offersStore, imagesStore} = require(`./stores`);
+const offersRouter = require(`./routes/offers`)(offersStore, imagesStore);
+const defaultRouter = require(`./routes/default`);
+
 app.disable(`x-powered-by`);
 
 app.use(`/api/offers`, offersRouter);
-
-app.use((req, _res) => {
-  throw new NotImplementedError(`${req.path} is not implemented yet`);
-});
-
-app.use((err, req, res, _next) => {
-  if (err) {
-    const doesAcceptHtml = req.accepts(`html`) === `html`;
-    const errorMsg = doesAcceptHtml ? generateHtmlError(err) : generateJSONError(err);
-
-    res
-      .status(err.code)
-      .send(errorMsg);
-  }
-});
+app.use(`/`, defaultRouter);
 
 module.exports = {
   name: `server`,

@@ -1,4 +1,4 @@
-const generateEntity = require(`../src/generate-entity`);
+const generateEntity = require(`./mocks/generator/generate-entity`);
 const entityConfig = require(`../src/config`).entity;
 const assert = require(`assert`);
 const url = require(`url`);

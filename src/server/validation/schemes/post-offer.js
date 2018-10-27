@@ -1,47 +1,61 @@
 module.exports = {
   title: {
-    testType: `string`,
     isRequired: true,
+    testType: `string`,
     testLength: {
       min: 30,
       max: 140,
     }
   },
-  type: {
+  description: {
     testType: `string`,
+    testLength: {
+      min: 0,
+      max: 1000,
+    }
+  },
+  type: {
     isRequired: true,
+    testType: `string`,
     isOneOfValues: [`flat`, `palace`, `house`, `bungalo`],
   },
   price: {
-    testType: `number`,
     isRequired: true,
+    testType: `number`,
     isInRange: {
       min: 1,
       max: 100000,
     }
   },
+  guests: {
+    testType: `number`,
+    isInRange: {
+      min: 1,
+      max: 100,
+    }
+  },
   address: {
-    testType: `string`,
     isRequired: true,
+    testType: `string`,
     testLength: {
       min: 0,
       max: 100,
     },
-    testMask: /^\d+,\s*\d+$/gi
+    testMask: /^\d+,\s*\d+$/
   },
   checkin: {
-    testType: `string`,
     isRequired: true,
-    testMask: /^\d{2}:\d{2}$/gi
+    testType: `string`,
+    testMask: /^\d{2}:\d{2}$/
   },
   checkout: {
-    testType: `string`,
     isRequired: true,
-    testMask: /^\d{2}:\d{2}$/gi
+    testType: `string`,
+    testMask: /^\d{2}:\d{2}$/
   },
   rooms: {
-    testType: `number`,
     isRequired: true,
+    testType: `number`,
     isInRange: {
       min: 0,
       max: 1000,
@@ -49,19 +63,15 @@ module.exports = {
   },
   features: {
     isArrayOfUniqueValues: true,
-    isRequired: false,
     areManyOfValues: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
   },
   avatar: {
     isImage: true,
-    isRequired: false,
   },
   preview: {
     isImage: true,
-    isRequired: false,
   },
   name: {
     testType: `string`,
-    isRequired: false,
   },
 };

@@ -16,7 +16,7 @@ module.exports = {
     return null;
   },
   isImage(value) {
-    const {mimetype} = value;
+    const mimetype = value && value.mimetype;
 
     if ((!mimetype || !(/image/gi.test(mimetype)))) {
       return `should be image`;
@@ -25,12 +25,6 @@ module.exports = {
     return null;
   },
   testType(value, type) {
-    // in case of multipart/form-data everything is a string
-    // so we should check if it's numeric and should be numeric
-    if (type === `number` && isNumeric(value)) {
-      value = +value;
-    }
-
     if (typeof value !== type) {
       return `should be ${type}`;
     }
@@ -45,7 +39,9 @@ module.exports = {
     return null;
   },
   testLength(value, {min, max}) {
-    if (value.length < min) {
+    if (isNil(value) || isNil(value.length)) {
+      return `should have length`;
+    } else if (value.length < min) {
       return `should be more than ${min}`;
     } else if (value.length > max) {
       return `should be less than ${max}`;
@@ -79,7 +75,7 @@ module.exports = {
     return null;
   },
   testMask(value, testMask) {
-    if (testMask.test(value)) {
+    if (!testMask.test(value)) {
       return `doesn't fit the expected format`;
     }
 

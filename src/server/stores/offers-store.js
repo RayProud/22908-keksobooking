@@ -5,11 +5,11 @@ const setupCollection = async () => {
   const dBase = await db;
 
   const collection = dBase.collection(OFFERS_COLLECTION_NAME);
-  collection.createIndex({date: 1}, {unique: true});
+  collection.createIndex({name: 1});
   return collection;
 };
 
-class OfferStore {
+class OffersStore {
   constructor(collection) {
     this.collection = collection;
   }
@@ -31,4 +31,4 @@ class OfferStore {
   }
 }
 
-module.exports = new OfferStore(setupCollection().catch(`Couldn't connect to ${OFFERS_COLLECTION_NAME} collection`));
+module.exports = new OffersStore(setupCollection().catch(`Couldn't connect to ${OFFERS_COLLECTION_NAME} collection`));
