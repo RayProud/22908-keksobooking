@@ -67,35 +67,57 @@ module.exports = (offersRouter) => {
     res.json(page);
   }));
 
-  offersRouter.post(`/`, jsonParser, upload.single(`avatar`), asyncMiddleware(async (req, res) => {
-    const {body, file} = req;
+  offersRouter.post(
+      `/`,
+      jsonParser,
+      upload.fields([
+        {name: `avatar`, maxCount: 1},
+        {name: `preview`, maxCount: 1}
+      ]),
+      asyncMiddleware(async (req, res) => {
+        const {body, files = {}} = req;
+        let {avatar, preview} = files;
 
-    if (file) {
-      const {originalname, mimetype} = file;
-      body.avatar = {
-        name: originalname,
-        mimetype
-      };
-    }
+        if (avatar && avatar.length > 0) {
+          avatar = avatar[0];
+          const {originalname, mimetype} = avatar;
+          body.avatar = {
+            name: originalname,
+            mimetype
+          };
+        }
 
-    const validatedOffer = validate(body, postOfferScheme);
-    const {address} = body;
-    const [x, y] = address.split(`,`);
-    const location = {
-      x: +x.trim(),
-      y: +y.trim(),
-    };
-    validatedOffer.location = location;
+        if (preview && preview.length > 0) {
+          preview = preview[0];
+          const {originalname, mimetype} = preview;
+          body.preview = {
+            name: originalname,
+            mimetype
+          };
+        }
 
-    const objectToSave = prepareOfferForSave(validatedOffer);
+        const validatedOffer = validate(body, postOfferScheme);
+        const {address} = body;
+        const [x, y] = address.split(`,`);
+        const location = {
+          x: +x.trim(),
+          y: +y.trim(),
+        };
+        validatedOffer.location = location;
 
-    const result = await offersRouter.offersStore.save(objectToSave);
-    const {insertedId} = result;
+        const objectToSave = prepareOfferForSave(validatedOffer);
 
-    if (file) {
-      await offersRouter.imageStore.save(insertedId, toStream(file.buffer));
-    }
+        const result = await offersRouter.offersStore.save(objectToSave);
+        const {insertedId} = result;
 
-    res.send(validatedOffer);
-  }));
+        if (avatar) {
+          await offersRouter.imageStore.save(insertedId, toStream(avatar.buffer));
+        }
+
+        if (preview) {
+          await offersRouter.imageStore.save(insertedId, toStream(preview.buffer));
+        }
+
+        res.send(validatedOffer);
+      }));
 };

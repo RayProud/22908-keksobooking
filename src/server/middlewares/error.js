@@ -8,7 +8,7 @@ module.exports = (router) => {
       const errorMsg = doesAcceptHtml ? generateHtmlError(err) : generateJSONError(err);
 
       if (err instanceof MongoError) {
-        res.status(400).json(err.message);
+        res.status(500).json(err.message);
         return;
       }
 
