@@ -25,7 +25,7 @@ async function askForAmount() {
   let entitiesCount = await askQuestion(colors.blue(`How many elements should we create?\n`));
 
   while (!isNumeric(entitiesCount)) {
-    console.log(colors.red(`Value should be a number. Try another time.\n`));
+    console.warn(colors.red(`Value should be a number. Try another time.\n`));
     entitiesCount = await askQuestion(colors.blue(`How many elements should we create?\n`));
   }
 
@@ -62,7 +62,7 @@ module.exports = {
       const entities = Array.from({length: entitiesCount}, () => generateEntity(entity));
       const fileDir = await askQuestion(colors.blue(`Where to save?\n`));
       await checkAndWrite(fileDir, entities);
-      console.log(colors.green(`Done!\n`));
+      console.warn(colors.green(`Done!\n`));
     } catch (err) {
       console.error(colors.red(`Some problems with writing the file:\n`), err);
       process.exit(1);

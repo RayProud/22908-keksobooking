@@ -2,6 +2,7 @@ const {BadRequestError, NotFoundError} = require(`../../errors`);
 const validate = require(`../../validation/validate`);
 const {getOfferScheme} = require(`../../validation/schemes`);
 const {asyncMiddleware} = require(`../../../helpers/common`);
+const logger = require(`../../../logger`);
 
 module.exports = (offersRouter) => {
   offersRouter.get(`/:date`, asyncMiddleware(async (req, res) => {
@@ -41,11 +42,11 @@ module.exports = (offersRouter) => {
     res.header(`Content-Type`, `image/jpg`);
     res.header(`Content-Length`, avatar.info.length);
 
-    res.on(`error`, (e) => console.error(e));
+    res.on(`error`, (e) => logger.error(e));
     res.on(`end`, () => res.end());
 
     const stream = avatar.stream;
-    stream.on(`error`, (e) => console.error(e));
+    stream.on(`error`, (e) => logger.error(e));
     stream.on(`end`, () => res.end());
     stream.pipe(res);
   }));
