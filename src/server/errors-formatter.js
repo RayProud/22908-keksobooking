@@ -9,7 +9,8 @@ function generateHtmlError(err) {
 
   if (errors.length) {
     errorMessage = errors.reduce((prev, cur) => {
-      const currentErrMsg = `${cur.fieldName} ${cur.errorMessage}`;
+      const fieldName = `${cur.fieldName ? `${cur.fieldName} ` : ``}`;
+      const currentErrMsg = `${fieldName}${cur.errorMessage}`;
 
       return prev ? `${prev}, ${currentErrMsg}` : currentErrMsg;
     }, ``);

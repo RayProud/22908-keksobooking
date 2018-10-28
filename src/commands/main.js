@@ -5,7 +5,7 @@ const writeFile = promisify(fs.writeFile);
 const colors = require(`colors/safe`);
 
 const {name} = require(`../../package.json`);
-const generateEntity = require(`../generate-entity`);
+const generateEntity = require(`../../test/mocks/generator/generate-entity`);
 const {entity} = require(`../config`);
 const {isNumeric} = require(`../helpers/common`);
 

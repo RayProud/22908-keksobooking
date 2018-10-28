@@ -40,7 +40,7 @@ function getRandomItemFromArray(array) {
   const length = array.length;
 
   if (length <= 1) {
-    return array;
+    return array[0];
   }
 
   return array[getRandomNumberInRange(0, length)];
@@ -54,7 +54,7 @@ function getRandomSample(array) {
   const length = array.length;
 
   if (length <= 1) {
-    return array;
+    return array[0];
   }
 
   return shuffle(array).slice(0, getRandomNumberInRange(0, length));
@@ -78,6 +78,8 @@ function isArrayOfUniqueValues(value) {
   return testSet.size === value.length;
 }
 
+const asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+
 module.exports = {
   shuffle,
   getRandomNumberInRange,
@@ -88,4 +90,5 @@ module.exports = {
   exists,
   isNil,
   isArrayOfUniqueValues,
+  asyncMiddleware,
 };

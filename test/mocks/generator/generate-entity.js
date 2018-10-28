@@ -2,13 +2,13 @@ const {
   generateAvatar,
   generateLocation,
   generateDate,
-} = require(`./helpers/entity`);
+} = require(`../../../src/helpers/entity`);
 const {
   shuffle,
   getRandomNumberInRange,
   getRandomItemFromArray,
   getRandomSample,
-} = require(`./helpers/common`);
+} = require(`../../../src/helpers/common`);
 
 function generateEntity(entityConfig) {
   const {offer: {title, price, type, rooms, guests, checkin, checkout, features, photos}, date} = entityConfig;
