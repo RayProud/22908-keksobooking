@@ -17,7 +17,7 @@ module.exports = {
     }
 
     // we hold the logic of running a server inside the execute function
-    // to run the server only when we want it to being run
+    // to run the server only when we want it to run
     const app = express();
     const {offersStore, imagesStore} = require(`./stores`);
     const offersRouter = require(`./routes/offers`)(offersStore, imagesStore);
