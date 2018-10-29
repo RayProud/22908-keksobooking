@@ -5,9 +5,7 @@ const logger = require(`../../logger`);
 module.exports = (router) => {
   const ERROR_HANDLER = (err, req, res, _next) => {
     if (err) {
-      if (process.env.NODE_ENV !== `production`) {
-        logger.error(err);
-      }
+      logger.error(err);
 
       const doesAcceptHtml = req.accepts(`html`) === `html`;
       const errorMsg = doesAcceptHtml ? generateHtmlError(err) : generateJSONError(err);
