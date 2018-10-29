@@ -1,12 +1,17 @@
 const {MongoClient} = require(`mongodb`);
+const logger = require(`../logger`);
 
-const URL = `mongodb://localhost:27017`;
-const DB_NAME = `keksobooking`;
+const {
+  DB_HOST = `localhost:27017`,
+  DB_PATH = `keksobooking`
+} = process.env;
+
+const URL = `mongodb://${DB_HOST}`;
 
 const db = MongoClient.connect(URL)
-  .then((client) => client.db(DB_NAME))
+  .then((client) => client.db(DB_PATH))
   .catch((error) => {
-    console.error(`Failed to conntect to ${DB_NAME} database`, error);
+    logger.error(`Failed to conntect to ${DB_PATH} database`, error);
     process.exit(1);
   });
 
