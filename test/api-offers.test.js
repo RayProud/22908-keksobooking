@@ -1514,20 +1514,8 @@ describe(`POST api/offers`, () => {
 });
 
 describe(`GET api/offers/:data/avatar`, () => {
-  const realOfferDateWithAvatar = 1538317798;
   const realOfferDateWithoutAvatar = 1538544650;
   const notExistingOfferDate = 1511110629;
-
-  // how to test it with no real DB?
-  describe.skip(`with a valid date which has an avatar`, () => {
-    it(`responds with an image`, async () => {
-      return request(app)
-        .get(`/api/offers/${realOfferDateWithAvatar}/avatar`)
-        .set(`Accept`, `application/json`)
-        .expect(`Content-Type`, /image/)
-        .expect(200);
-    });
-  });
 
   describe(`with a valid date which has no avatar`, () => {
     it(`responds with Not Found in json`, async () => {
