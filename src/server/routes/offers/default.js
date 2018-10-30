@@ -32,14 +32,20 @@ const toPage = async (cursor, skip = DEFAULT_SKIP_AMOUNT, limit = DEFAULT_LIMIT_
   };
 };
 
-function prepareOfferForSave(offer) {
+function prepareOfferForSave(offer, location) {
   const date = Math.floor(Date.now() / 1000);
 
   const offerToSave = Object.assign(
       {},
-      offer,
       {
         date,
+        offer: Object.assign(
+            {},
+            offer,
+            {
+              photos: [], // we don't provide api for previews but have to give back an empty array at least
+            }),
+        location,
         author: {
           name: offer.name || getRandomItemFromArray(DEFAULT_NAMES),
         }
@@ -103,9 +109,8 @@ module.exports = (offersRouter) => {
           x: +x.trim(),
           y: +y.trim(),
         };
-        validatedOffer.location = location;
 
-        const objectToSave = prepareOfferForSave(validatedOffer);
+        const objectToSave = prepareOfferForSave(validatedOffer, location);
 
         const result = await offersRouter.offersStore.save(objectToSave);
         const {insertedId} = result;
@@ -118,6 +123,9 @@ module.exports = (offersRouter) => {
           await offersRouter.imageStore.save(insertedId, toStream(preview.buffer));
         }
 
-        res.send(validatedOffer);
+        const offerToSendBack = Object.assign({}, validatedOffer);
+        offerToSendBack.location = location;
+
+        res.send(offerToSendBack);
       }));
 };

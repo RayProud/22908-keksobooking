@@ -608,6 +608,7 @@ textarea:focus
 .notice__preview img
 {
     vertical-align: middle;
+    max-width: 100%;
 }
 
 .notice__header
@@ -853,4 +854,9 @@ textarea:focus
 .footer-social-item-vk
 {
     background-position: -10px -10px;
+}
+
+.upload__img {
+    max-height: 70px;
+    width: auto;
 }

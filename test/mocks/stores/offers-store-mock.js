@@ -1,5 +1,6 @@
 const Cursor = require(`../cursor-mock`);
 const testEntities = require(`../test-data`);
+const THE_BEST_MOCK_ID = 42;
 
 class OffersStoreMock {
   constructor(data) {
@@ -17,7 +18,7 @@ class OffersStoreMock {
 
   async save() {
     return {
-      insertedId: 42
+      insertedId: THE_BEST_MOCK_ID
     };
   }
 
