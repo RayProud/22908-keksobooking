@@ -78,7 +78,11 @@ function isArrayOfUniqueValues(value) {
   return testSet.size === value.length;
 }
 
-const asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+function asyncMiddleware(fn) {
+  return function (req, res, next) {
+    return fn(req, res, next).catch(next);
+  };
+}
 
 module.exports = {
   shuffle,

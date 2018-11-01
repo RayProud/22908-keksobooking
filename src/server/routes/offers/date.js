@@ -33,7 +33,7 @@ module.exports = (offersRouter) => {
       }]);
     }
 
-    const avatar = await offersRouter.imageStore.get(desiredOffer._id);
+    const avatar = await offersRouter.imagesStore.get(desiredOffer._id);
 
     if (!avatar) {
       throw new NotFoundError(`offer with date equals to ${date} has no avatar`);

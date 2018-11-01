@@ -1,5 +1,5 @@
 const colors = require(`colors/safe`);
-const commands = require(`./command-loader`);
+const commands = require(`.`);
 
 const description = Object.values(commands).reduce((prev, cur) => {
   return cur.name === `help` ? cur : `${prev}\n--${colors.grey(cur.name)} - ${colors.green(cur.description)}`;

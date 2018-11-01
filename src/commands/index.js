@@ -4,4 +4,5 @@ module.exports = {
   version: require(`./version`),
   author: require(`./author`),
   server: require(`../server`),
+  fill: require(`./fill`),
 };

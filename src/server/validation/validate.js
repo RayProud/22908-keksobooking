@@ -21,7 +21,6 @@ function validate(objToValidate, scheme) {
   const validatedObj = {};
 
   const errors = Object.keys(scheme).reduce((prev, key) => {
-    let innerErrors = [];
     const currentScheme = scheme[key];
 
     const value = prepareForValidation(objToValidate[key], currentScheme);
@@ -49,9 +48,7 @@ function validate(objToValidate, scheme) {
       return initialArray;
     }, []);
 
-    innerErrors = validationErrors;
-
-    return prev.concat(innerErrors);
+    return prev.concat(validationErrors);
   }, []);
 
   if (errors.length) {
