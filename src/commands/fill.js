@@ -2,12 +2,13 @@ const fs = require(`fs`);
 const {promisify} = require(`util`);
 const readFile = promisify(fs.readFile);
 const colors = require(`colors/safe`);
-const {offersStore} = require(`../server/stores`);
 
 module.exports = {
   name: `fill`,
   description: `Fills the database with mock data`,
   async execute() {
+    // require store here to prevent connect to the db without using execute function
+    const {offersStore} = require(`../server/stores`);
     console.log(colors.blue(`This program grabs mock data from 'keksobooking/test/mocks/test-data.json'\n`));
 
     try {
@@ -17,14 +18,14 @@ module.exports = {
       await offersStore.saveMany(objectToSave);
       console.log(colors.green(`Done! Data were saved!'\n`));
 
-      // to close db connection
+      // close db connection
       process.exit(0);
     } catch (err) {
       if (err.code === `ENOENT`) {
         console.log(colors.red(`There is no 'keksobooking/test/mocks/test-data.json'.\n`));
         console.log(colors.green(`Please use this script with no flags to generate mock data\n`));
 
-        // to close db connection
+        // close db connection
         process.exit(0);
       }
 
