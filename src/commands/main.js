@@ -6,7 +6,7 @@ const colors = require(`colors/safe`);
 
 const {name} = require(`../../package.json`);
 const generateEntity = require(`../../test/mocks/generator/generate-entity`);
-const {entity} = require(`../config`);
+const {entity} = require(`../generate-entity-config`);
 const {isNumeric} = require(`../helpers/common`);
 
 const GREETING = `Hi there!\nThis program will run the server of «${name}».\n`;

@@ -116,11 +116,11 @@ module.exports = (offersRouter) => {
         const {insertedId} = result;
 
         if (avatar) {
-          await offersRouter.imageStore.save(insertedId, toStream(avatar.buffer));
+          await offersRouter.imagesStore.save(insertedId, toStream(avatar.buffer));
         }
 
         if (preview) {
-          await offersRouter.imageStore.save(insertedId, toStream(preview.buffer));
+          await offersRouter.imagesStore.save(insertedId, toStream(preview.buffer));
         }
 
         const offerToSendBack = Object.assign({}, validatedOffer);

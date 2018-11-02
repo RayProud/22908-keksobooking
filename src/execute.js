@@ -1,5 +1,5 @@
 // будем считать, что эти команды — расширяемый функционал
-const commands = require(`./commands/command-loader`);
+const commands = require(`./commands`);
 
 // а эти три команды — стандартный набор и вообще исключительные случаи
 const error = require(`./commands/error`);

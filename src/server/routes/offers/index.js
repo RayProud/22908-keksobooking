@@ -14,6 +14,6 @@ errorMiddleware(offersRouter);
 
 module.exports = (offersStore, imagesStore) => {
   offersRouter.offersStore = offersStore;
-  offersRouter.imageStore = imagesStore;
+  offersRouter.imagesStore = imagesStore;
   return offersRouter;
 };

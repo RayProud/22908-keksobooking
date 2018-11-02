@@ -1,5 +1,5 @@
 const {MongoError} = require(`mongodb`);
-const {generateHtmlError, generateJSONError} = require(`../errors-formatter`);
+const {generateHtmlError, generateJSONError} = require(`../error-formatter`);
 const logger = require(`../../logger`);
 
 module.exports = (router) => {
